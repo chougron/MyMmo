@@ -1,0 +1,52 @@
+canvas {
+    border: 1px solid black;
+}
+
+h1 {
+    text-align: center;
+}
+
+#div_container {
+    width: 1000px;
+    margin: auto;
+}
+
+#div_map {
+    float: left;
+}
+
+#div_menu {
+    width: 320px;
+    float: right;
+    margin-bottom: 10px;
+    margin-left: 30px;
+    height: 480px;
+}
+
+#map {
+    width: 640px;
+    height: 480px;
+}
+
+#select_tileset {
+    margin-left: 10px;
+}
+
+#tileSet {
+    width: 320px;
+    margin-top: 20px;
+    height: 384px;
+    margin-bottom: 15px;
+}
+
+.layer_number {
+    margin-left: 10px;
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+}
+
+#options {
+    width: 1000px;
+    text-align: center;
+}
