@@ -5,8 +5,14 @@ process.title = 'Server';
 var webSocketsServerPort = 8080;
 
 // websocket and http servers
-var webSocketServer = require('websocket').server;
+//var webSocketServer = require('websocket').server;
 var http = require('http');
+var server = http.createServer(function(request, response) {});
+server.listen(webSocketsServerPort, function() {
+    console.log((new Date()) + " Server is listening on port " + webSocketsServerPort);
+});
+var io = require('socket.io').listen(server);
+
 
 /**
  * Connexion et authentification à la B.D.D.
@@ -15,12 +21,12 @@ var mongo = require('mongodb'),
   Server = mongo.Server,
   Db = mongo.Db;
 
-var server = new Server('mongodb1.alwaysdata.com', 27017, {auto_reconnect: true}); //Connect to your MongoDB DB
-var db = new Db('mymmo_1', server);
+var server = new Server('localhost', 27017, {auto_reconnect: true}); //Connect to your MongoDB DB
+var db = new Db('test', server);
 
 db.open(function(err, db) {
   if(!err) {
-      db.authenticate('USERNAME', 'PASSWORD', function(){ //Change here with your credentials
+      db.authenticate('root', 'root', function(){ //Change here with your credentials
           db.collection('pnj', function(err, collection){
             collection.remove();
             collection.insert([
@@ -81,42 +87,38 @@ db.open(function(err, db) {
 /**
 * HTTP server
 */
-var server = http.createServer(function(request, response) {
-    // Not important for us. We're writing WebSocket server, not HTTP server
-});
-server.listen(webSocketsServerPort, function() {
-    console.log((new Date()) + " Server is listening on port " + webSocketsServerPort);
-});
+//var server = http.createServer(function(request, response) {
+//    // Not important for us. We're writing WebSocket server, not HTTP server
+//});
+//server.listen(webSocketsServerPort, function() {
+//    console.log((new Date()) + " Server is listening on port " + webSocketsServerPort);
+//});
 
 /**
 * WebSocket server
 */
-var wsServer = new webSocketServer({
-    // WebSocket server is tied to a HTTP server. To be honest I don't understand why.
-    httpServer: server
-});
+//var wsServer = new webSocketServer({
+//    // WebSocket server is tied to a HTTP server. To be honest I don't understand why.
+//    httpServer: server
+//});
 
 //La liste des joueurs connectés en socket
 var clients = [ ];
 
 // This callback function is called every time someone
 // tries to connect to the WebSocket server
-wsServer.on('request', function(request) {
-    console.log((new Date()) + ' Connection from origin ' + request.origin + '.');
+io.sockets.on('connection', function(socket) {
+    console.log((new Date()) + " Connection OK");
 
-    // accept connection - you should check 'request.origin' to make sure that
-    // client is connecting from your website
-    // (http://en.wikipedia.org/wiki/Same_origin_policy)
-    var connection = request.accept(null, request.origin);
     // we need to know client index to remove them on 'close' event
-    var client = {connection:connection,player:null};
+    var client = {connection:socket,player:null};
     var index = clients.push(client) - 1;
 
     console.log((new Date()) + ' Connection accepted.');
 
     // user sent some message
-    connection.on('message', function(received) {
-        var message = JSON.parse(received.utf8Data);
+    socket.on('message', function(received) {
+        var message = JSON.parse(received);
         switch(message.act){
             case 'join':
                 clients[index].player = message.player;
@@ -157,9 +159,8 @@ wsServer.on('request', function(request) {
     });
 
     // user disconnected
-    connection.on('close', function(connection) {
-        console.log((new Date()) + " Peer "
-            + connection.remoteAddress + " disconnected.");
+    socket.on('disconnect', function(connection) {
+        console.log((new Date()) + " Peer disconnected.");
         // remove user from the list of connected clients
         clients.splice(index, 1, "NULL");
         var nb = 0;
@@ -190,7 +191,7 @@ var doJoin = function(player, indexUser){
     json = JSON.stringify(message);
     sendMessageToUser(json,indexUser);
     sendPnjInZone(player.map, player.zone, indexUser);
-}
+};
 
 /**
  * On envoie un message aux joueurs pour les prévenir que le joueur bouge
@@ -204,7 +205,7 @@ var doMove = function(player, indexUser){
     var message = {act:'move',player:player};
     var json = JSON.stringify(message);
     sendMessageZone(json,indexUser,player.map,player.zone);
-}
+};
 
 /**
  * On envoie un message aux joueur de l'ancienne et de la nouvelle zone
@@ -229,7 +230,7 @@ var doChangeZone = function(player, oldZone, newZone, indexUser){
     json = JSON.stringify(message);
     sendMessageToUser(json,indexUser);
     sendPnjInZone(player.map, player.zone, indexUser);
-}
+};
 
 /**
  * On envoie un message aux joueurs qui sont dans la même map que 
@@ -247,12 +248,12 @@ var sendMessageMap = function(message, indexUser, map){
             i != indexUser && //Si l'utilisateur n'est pas celui qui a émi le message (pour lui envoyer un message, -1)
             player.map.author == map.author && //S'il se situe sur la bonne carte
             player.map.name == map.name){
-            clients[i].connection.sendUTF(message);
+            clients[i].connection.send(message);
             console.log("Message envoyé à "+clients[indexUser].player.name);
             //console.log("Message envoyé à "+clients[indexUser].connection.remoteAddress);
         }
     }
-}
+};
 
 /**
  * On envoie un message aux joueurs qui sont dans la même map et zone que 
@@ -273,12 +274,12 @@ var sendMessageZone = function(message, indexUser, map, zone){
             player.map.name == map.name && 
             player.zone.x == zone.x && //Et s'il est dans la bonne zone
             player.zone.y == zone.y){
-            clients[i].connection.sendUTF(message);
+            clients[i].connection.send(message);
             console.log("Message envoyé à "+clients[indexUser].player.name);
             //console.log("Message envoyé à "+clients[indexUser].connection.remoteAddress);
         }
     }
-}
+};
 
 /**
  * On envoie un message à un utilisateur en particulier
@@ -286,10 +287,10 @@ var sendMessageZone = function(message, indexUser, map, zone){
  * @param indexUser l'index de l'utilisateur à qui envoyer
  */
 var sendMessageToUser = function(message, indexUser){
-    clients[indexUser].connection.sendUTF(message);
+    clients[indexUser].connection.send(message);
     console.log("Message envoyé à "+clients[indexUser].player.name);
     //console.log("Message envoyé à "+clients[indexUser].connection.remoteAddress);
-}
+};
 
 /**
  * Retourne tous les joueurs différents de indexUser présent dans la zone d'une map
@@ -314,7 +315,7 @@ var whoIsZone = function(map, zone, indexUser){
             }
     }
     return array;
-}
+};
 
 var sendPnjInZone = function(map, zone, indexUser){
     var pnjs = new Array();
@@ -325,7 +326,7 @@ var sendPnjInZone = function(map, zone, indexUser){
             sendMessageToUser(json,indexUser);
         });
     });
-}
+};
 
 var doSaveMap = function(name, zones, tileSets, obstacles){
     var fs = require('fs');
@@ -343,7 +344,7 @@ var doSaveMap = function(name, zones, tileSets, obstacles){
         stream.write("}");  
     });
     console.log("Carte sauvegardée : "+name);
-}
+};
 
 var doChangeMap = function(player, oldMap, newMap, indexUser){
     //On envoie le joueur qui change de zone aux joueurs, pour qu'ils le change aussi
@@ -359,4 +360,4 @@ var doChangeMap = function(player, oldMap, newMap, indexUser){
     sendMessageToUser(json,indexUser);
     //On récupère la liste de tous les pnjs de la zone, que l'on envoie au joueur courant
     sendPnjInZone(player.map, player.zone, indexUser);
-}
+};

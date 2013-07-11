@@ -3,7 +3,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title></title>
-        <base href="/mymmo/www/"/>
+        <base href="/MyMmo/"/>
         <script src="Shared/js/jquery.js"></script>
         <script src="Client/js/init.js"></script>
         <script src="Shared/js/log.js"></script>
@@ -15,6 +15,7 @@
         <script src="Client/js/motor.js"></script>
         <script src="Client/js/player.js"></script>
         <script src="Client/js/events.js"></script>
+        <script src="http://localhost:8080/socket.io/socket.io.js"></script>
         <script src="Client/js/socket.js"></script>
         <script src="Client/js/pnj.js"></script>
     </head>
