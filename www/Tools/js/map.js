@@ -143,16 +143,16 @@ var Map = function(){
     this.setCurrentLayer = function(number){
         this.currentLayer = number;
         this.drawZone();
-        $("#number_1").attr('src', "www/Tools/img/1_blue.png");
-        $("#number_2").attr('src', "www/Tools/img/2_blue.png");
-        $("#number_3").attr('src', "www/Tools/img/3_blue.png");
-        $("#obstacles").attr('src', "www/Tools/img/obs_blue.png");
+        $("#number_1").attr('src', "Tools/img/1_blue.png");
+        $("#number_2").attr('src', "Tools/img/2_blue.png");
+        $("#number_3").attr('src', "Tools/img/3_blue.png");
+        $("#obstacles").attr('src', "Tools/img/obs_blue.png");
         if(number != -1){
-            $("#number_"+(number+1)).attr('src', "www/Tools/img/"+(number+1)+"_red.png");
+            $("#number_"+(number+1)).attr('src', "Tools/img/"+(number+1)+"_red.png");
             TILESET.loadTileSet(this.tileSets[number]);
             SELECT.setSelected(this.tileSets[number]);
         }
-        else $("#obstacles").attr('src', "www/Tools/img/obs_red.png");
+        else $("#obstacles").attr('src', "Tools/img/obs_red.png");
     }
     
     this.placeObstable = function(topLeft, dCoords){

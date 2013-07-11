@@ -52,10 +52,10 @@ var Init = function(){
      */
     this.getTileSetArray = function(){
         var array = [
-            "www/Shared/img/plaines.png", //0
-            "www/Shared/img/plaines_objets.png", //1
-            "www/Shared/img/murs.png", //2
-            "www/Shared/img/mobilier.png" //3
+            "Shared/img/plaines.png", //0
+            "Shared/img/plaines_objets.png", //1
+            "Shared/img/murs.png", //2
+            "Shared/img/mobilier.png" //3
         ];
         return array;
     }
@@ -96,21 +96,19 @@ var Init = function(){
      * @return le sprite chargé
      */
     this._loadSprite = function(name, i){
-        var path = "www/Shared/img/sprites/"+name+".png";
-        var sprite = new Sprite(name);
-        var spriteImg = new Image();
-        spriteImg.src = path;
+        var path = "Shared/img/sprites/"+name+".png";
+        
+        var sprite = new Image();
+        sprite.src = path;
         log("Loading Sprite : "+path);
         
         var _this = this;
         
-        spriteImg.onload = function(){
+        sprite.onload = function(){
             log("Sprite loaded.");
             _this.loaded += 1;
             _this.checkReady();
-        }
-        sprite.setImage(spriteImg);
-        sprite.setLength(i);
+        };
         return sprite;
     }
     
@@ -132,11 +130,15 @@ var Init = function(){
 }
 
 var startSocket = function(){
-    window.WebSocket = window.WebSocket || window.MozWebSocket;
-    if (!window.WebSocket) alert("votre navigateur ne supporte pas les sockets");
-    
-    CONNECTION = new WebSocket('ws://localhost:8080'); //Here put the Node.JS server
-    CONNECTION.onopen = function(){
+//    window.WebSocket = window.WebSocket || window.MozWebSocket;
+//    if (!window.WebSocket) alert("votre navigateur ne supporte pas les sockets");
+//    
+//    CONNECTION = new WebSocket('ws://localhost:8080'); //Here put the Node.JS server
+//    CONNECTION.onopen = function(){
+//        log("WS connection opened");
+//    }
+    CONNECTION = io.connect('http://localhost:8080');
+    CONNECTION.on('connect', function () {
         log("WS connection opened");
-    }
+    });
 }

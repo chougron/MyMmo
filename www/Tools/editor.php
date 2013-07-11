@@ -3,8 +3,9 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title></title>
-        <base href="/mymmo/www/"/>
+        <base href="/MyMmo/"/>
         <link rel="stylesheet" type="text/css" href="Tools/style/editor.css" media="screen" />
+        <script src="http://localhost:8080/socket.io/socket.io.js"></script>
         <script src="Shared/js/jquery.js"></script>
         <script src="Tools/js/editor.js"></script>
         <script src="Tools/js/init.js"></script>
