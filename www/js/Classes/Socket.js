@@ -35,7 +35,7 @@ var Socket = function(){
      * @returns {void}
      */
     Socket.doJoin = function(player){
-        Map.addPlayer(player.name, player.animation.sprite, player.animation.direction, player.coords.x, player.coords.y);
+        Map.addPlayer(player.name, player.animation.sprite, player.animation.direction, new Coords(player.coords.x, player.coords.y));
     };
     
     /**
@@ -46,7 +46,7 @@ var Socket = function(){
     Socket.doGetPlayerList = function(players){
         for(var i=0; i<players.length; i++){
             var player = players[i];
-            Map.addPlayer(player.name, player.animation.sprite, player.animation.direction, player.coords.x, player.coords.y);
+            Map.addPlayer(player.name, player.animation.sprite, player.animation.direction, new Coords(player.coords.x, player.coords.y));
         }
     };
     
@@ -95,6 +95,6 @@ var Socket = function(){
         if(Map.equals(oldMap))
             Map.removePlayer(player);
         if(Map.equals(newMap))
-            Map.addPlayer(player.name, player.animation.sprite, player.animation.direction, player.coords.x, player.coords.y);
+            Map.addPlayer(player.name, player.animation.sprite, player.animation.direction, new Coords(player.coords.x, player.coords.y));
     };
 };

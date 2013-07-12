@@ -52,6 +52,11 @@ var Player = function(){
     this.move = function(direction){
         if(this.isMoving)return;
         this.animation.setDirection(direction);
+        if(this.user){
+            var message = {'act':'move','player':this};
+            var tosend = JSON.stringify(message);
+            Socket.connection.send(tosend);
+        }
         
         if(!this.canMove(direction)){
             return;
@@ -59,11 +64,6 @@ var Player = function(){
         
         this.isMoving = true;
         this.animation.setAction("WALK");
-        if(this.user){
-            var message = {'act':'move','player':this};
-            var tosend = JSON.stringify(message);
-            Socket.connection.send(tosend);
-        }
         this.doMove(direction);
     };
     
@@ -176,7 +176,7 @@ var Player = function(){
             return;
         }
         if(this.user){
-            var oldMap = Map;
+            var oldMap = {author:Map.author,title:Map.title};
             this.coords = new Coords(_coords.x,_coords.y);
             
             
@@ -185,7 +185,7 @@ var Player = function(){
             PLAYER = Map.addPlayer(this.name, this.animation.sprite, this.animation.direction, this.coords);
             PLAYER.user = true;
             
-            var newMap = Map;
+            var newMap = {author:Map.author,title:Map.title};
             
             var message = {'act':'changeMap','player':PLAYER,'oldMap':oldMap,'newMap':newMap};
             var tosend = JSON.stringify(message);
