@@ -1,28 +1,24 @@
 "use strict";
 process.title = 'Server';
 
-// Port where we'll run the websocket server
-var webSocketsServerPort = 8080;
+//The port we listen for WebSockets
+var WebSocketServerPort = 8080;
 
-// websocket and http servers
-//var webSocketServer = require('websocket').server;
+//Launch the listening
 var http = require('http');
-var server = http.createServer(function(request, response) {});
-server.listen(webSocketsServerPort, function() {
-    console.log((new Date()) + " Server is listening on port " + webSocketsServerPort);
+var server = http.createServer(function(request, response){});
+server.listen(WebSocketServerPort, function(){
+    console.log((new Date()) + " Server started listening on port " + WebSocketServerPort);
 });
+
 var io = require('socket.io').listen(server);
 
-
-/**
- * Connexion et authentification à la B.D.D.
- */
+//Connect to the MongoDB DB
 var mongo = require('mongodb'),
-  Server = mongo.Server,
-  Db = mongo.Db;
-
-var server = new Server('localhost', 27017, {auto_reconnect: true}); //Connect to your MongoDB DB
-var db = new Db('test', server);
+        Server = mongo.Server,
+        Db = mongo.Db;
+var dbServer = new Server('localhost', 27017, {auto_reconnect: true});
+var db = new Db('test', dbServer);
 
 db.open(function(err, db) {
   if(!err) {
@@ -32,89 +28,64 @@ db.open(function(err, db) {
             collection.insert([
                 {
                     animation:null,
-                    map:{author:"u0000001", name:"ForestHouse"},
-                    zone:{x:0,y:0},
+                    map:{author:"u0000001", title:"ForestHouse"},
                     coords:{x:6,y:8},
                     block:false,
-                    onWalk:"var NEWfONCTION = function(parameters){PLAYER.changeMap('u0000001','Maison',{x:0,y:0},{x:11,y:12});}",
-                    onAct:"var NEWfONCTION = function(parameters){alert(\"Quelle belle porte !\");}",
+                    onWalk:"var NEWfONCTION = function(parameters){PLAYER.changeMap('u0000001','Maison',{x:11,y:12});}",
+                    onAct:"var NEWfONCTION = function(parameters){alert(\"What a great door !\");}",
                     onInit:"var NEWfONCTION = function(parameters){}",
                     onClose:"var NEWfONCTION = function(parameters){}"
                 },
                 {
                     animation:null,
-                    map:{author:"u0000001", name:"Maison"},
-                    zone:{x:0,y:0},
+                    map:{author:"u0000001", title:"Maison"},
                     coords:{x:11,y:12},
                     block:false,
-                    onWalk:"var NEWfONCTION = function(parameters){PLAYER.changeMap('u0000001','ForestHouse',{x:0,y:0},{x:6,y:8});}",
-                    onAct:"var NEWfONCTION = function(parameters){alert(\"Quelle belle porte !\");}",
+                    onWalk:"var NEWfONCTION = function(parameters){PLAYER.changeMap('u0000001','ForestHouse',{x:6,y:8});}",
+                    onAct:"var NEWfONCTION = function(parameters){alert(\"What a great door !\");}",
                     onInit:"var NEWfONCTION = function(parameters){}",
                     onClose:"var NEWfONCTION = function(parameters){}"
                 },
                 {
                     animation : {sprite:1,direction:2,action:2},
-                    map:{author:"u0000001", name:"ForestHouse"},
-                    zone:{x:0,y:0},
+                    map:{author:"u0000001", title:"ForestHouse"},
                     coords:{x:7,y:9},
                     block:true,
                     onWalk:"var NEWfONCTION = function(parameters){}",
-                    onAct:"var NEWfONCTION = function(parameters){alert(\"Maison de Thierry.\");}",
+                    onAct:"var NEWfONCTION = function(parameters){alert(\"Thierry's House.\");}",
                     onInit:"var NEWfONCTION = function(parameters){}",
                     onClose:"var NEWfONCTION = function(parameters){}"
                 },
                 {
                     animation : {sprite:0,direction:2,action:2},
-                    map:{author:"u0000001", name:"Maison"},
-                    zone:{x:0,y:0},
+                    map:{author:"u0000001", title:"Maison"},
                     coords:{x:9,y:7},
                     block:true,
                     onWalk:"var NEWfONCTION = function(parameters){}",
-                    onAct:"var NEWfONCTION = function(parameters){alert(\"Bonjour, je m'appelle Thierry.\");}",
+                    onAct:"var NEWfONCTION = function(parameters){alert(\"Hello, I'm Thierry.\");}",
                     onInit:"var NEWfONCTION = function(parameters){}",
                     onClose:"var NEWfONCTION = function(parameters){}"
                 }
             ]);
           });
       });
-    console.log("Authentifie et connecte a la B.D.D.");
+    console.log((new Date()) + " Db connected correctly");
   }
   else {
     console.log(err);
   }
 });
 
-/**
-* HTTP server
-*/
-//var server = http.createServer(function(request, response) {
-//    // Not important for us. We're writing WebSocket server, not HTTP server
-//});
-//server.listen(webSocketsServerPort, function() {
-//    console.log((new Date()) + " Server is listening on port " + webSocketsServerPort);
-//});
+//The connected users list
+var clients = [];
 
-/**
-* WebSocket server
-*/
-//var wsServer = new webSocketServer({
-//    // WebSocket server is tied to a HTTP server. To be honest I don't understand why.
-//    httpServer: server
-//});
-
-//La liste des joueurs connectés en socket
-var clients = [ ];
-
-// This callback function is called every time someone
-// tries to connect to the WebSocket server
-io.sockets.on('connection', function(socket) {
-    console.log((new Date()) + " Connection OK");
-
-    // we need to know client index to remove them on 'close' event
-    var client = {connection:socket,player:null};
-    var index = clients.push(client) - 1;
-
-    console.log((new Date()) + ' Connection accepted.');
+io.sockets.on('connection', function(socket){
+  console.log((new Date()) + " Connection received");
+  
+  var client = {connection:socket,player:null};
+  var index = clients.push(client) - 1;
+  
+  console.log((new Date()) + " Connection accepted");
 
     // user sent some message
     socket.on('message', function(received) {
@@ -144,12 +115,8 @@ io.sockets.on('connection', function(socket) {
                 }
                 clients[index].player = _player; //On enregistre le joueur après son déplacement pour notre serveur
                 break;
-            case 'changeZone':
-                clients[index].player = message.player;
-                doChangeZone(message.player, message.oldZone, message.newZone, index);
-                break;
             case 'saveMap':
-                doSaveMap(message.name, message.zones, message.tileSets, message.obstacles);
+                doSaveMap(message.name, message.tiles, message.tileSets, message.obstacles);
                 break;
             case 'changeMap':
                 clients[index].player = message.player;
@@ -170,74 +137,25 @@ io.sockets.on('connection', function(socket) {
             array.push(i);
         }
     });
-
 });
 
 /**
- * On envoie un message aux joueurs pour les prévenir de la connexion
- * Et on en envoie un autre au joueur pour lui donner la liste de ceux présents
- * @param player le joueur connecté
- * @param indexUser l'index de la connexion du joueur
+ * Send a message to a particular user
+ * @param {JSON} message The message to send
+ * @param {int} indexUser The user index
+ * @returns {void}
  */
-var doJoin = function(player, indexUser){
-    //ON envoie le nouveau joueur aux utilisateurs, pour qu'ils l'affichent
-    player.user = false;
-    var message = {act:'join',player:player};
-    var json = JSON.stringify(message);
-    sendMessageZone(json,indexUser,player.map,player.zone);
-    //On récupère la liste de tous les joueurs de la zone, que l'on envoie au joueur courant
-    var players = whoIsZone(player.map, player.zone, indexUser);
-    message = {act:'getPlayerList',players:players};
-    json = JSON.stringify(message);
-    sendMessageToUser(json,indexUser);
-    sendPnjInZone(player.map, player.zone, indexUser);
+var sendMessageToUser = function(message, indexUser){
+    clients[indexUser].connection.send(message);
+    console.log("Message sent to "+clients[indexUser].player.name);
 };
 
 /**
- * On envoie un message aux joueurs pour les prévenir que le joueur bouge
- * @param player le joueur qui bouge
- * @param indexUser l'index de la connexion du joueur
- */
-var doMove = function(player, indexUser){
-    //On envoie le joueur qui bouge aux joueurs, pour qu'ils le bouge aussi
-    player.user = false;
-    player.isMoving = false;
-    var message = {act:'move',player:player};
-    var json = JSON.stringify(message);
-    sendMessageZone(json,indexUser,player.map,player.zone);
-};
-
-/**
- * On envoie un message aux joueur de l'ancienne et de la nouvelle zone
- * pour les prévenir que le joueur à changé de zone
- * On envoie aussi un message au joueur qui change pour lui donner la liste
- * des joueurs de la nouvelle zone
- * @param player le joueur qui change de zone
- * @param oldZone l'ancienne zone
- * @param newZone la nouvelle zone
- * @param indexUser l'index de la connexion du joueur
- */
-var doChangeZone = function(player, oldZone, newZone, indexUser){
-    //On envoie le joueur qui change de zone aux joueurs, pour qu'ils le change aussi
-    player.user = false;
-    var message = {act:'changeZone',player:player,oldZone:oldZone,newZone:newZone};
-    var json = JSON.stringify(message);
-    sendMessageZone(json,indexUser,player.map,oldZone);
-    sendMessageZone(json,indexUser,player.map,newZone);
-    //On récupère la liste de tous les joueurs de la zone, que l'on envoie au joueur courant
-    var players = whoIsZone(player.map, player.zone, indexUser);
-    message = {act:'getPlayerList',players:players};
-    json = JSON.stringify(message);
-    sendMessageToUser(json,indexUser);
-    sendPnjInZone(player.map, player.zone, indexUser);
-};
-
-/**
- * On envoie un message aux joueurs qui sont dans la même map que 
- * map, et on ne l'envoie pas à l'utilisateur indexUser
- * @param message le message à envoyer
- * @param indexUser l'index du joueur à qui il ne faut pas envoyer (-1 pour annuler)
- * @param map la map à qui envoyer le message
+ * Send a message to all the players in a Map except the sender (put indexUser to -1 else)
+ * @param {JSON} message
+ * @param {int} indexUser the User index
+ * @param {Map} map The Map on which to send
+ * @returns {void}
  */
 var sendMessageMap = function(message, indexUser, map){
     for (var i=0; i < clients.length; i++) {
@@ -245,61 +163,59 @@ var sendMessageMap = function(message, indexUser, map){
         if(clients[i]!="NULL" && clients[i].player != null)player = clients[i].player;
         else player = false;
         if(player &&
-            i != indexUser && //Si l'utilisateur n'est pas celui qui a émi le message (pour lui envoyer un message, -1)
-            player.map.author == map.author && //S'il se situe sur la bonne carte
-            player.map.name == map.name){
+            i != indexUser && //If the user didn't emit message (to send to him, indexUser : -1)
+            player.map.author == map.author && //If it's the good Map
+            player.map.title == map.title){
             clients[i].connection.send(message);
-            console.log("Message envoyé à "+clients[indexUser].player.name);
-            //console.log("Message envoyé à "+clients[indexUser].connection.remoteAddress);
+            console.log("Message sent to "+clients[indexUser].player.name);
         }
     }
 };
 
 /**
- * On envoie un message aux joueurs qui sont dans la même map et zone que 
- * map et zone, et on ne l'envoie pas à l'utilisateur indexUser
- * @param message le message à envoyer
- * @param indexUser l'index du joueur à qui il ne faut pas envoyer (-1 pour annuler)
- * @param map la map à qui envoyer le message
- * @param zone la zone à qui envoyer le message
+ * When a new player join a map, send messge to the others, and send him players and pnjs
+ * @param {Player} player The player joining
+ * @param {int} indexUser The user index
+ * @returns {void}
  */
-var sendMessageZone = function(message, indexUser, map, zone){
-    for (var i=0; i < clients.length; i++) {
-        var player;
-        if(clients[i]!="NULL" && clients[i].player != null)player = clients[i].player;
-        else player = false;
-        if(player &&
-            i != indexUser && //Si l'utilisateur n'est pas celui qui a émi le message (pour lui envoyer un message, -1)
-            player.map.author == map.author && //S'il se situe sur la bonne carte
-            player.map.name == map.name && 
-            player.zone.x == zone.x && //Et s'il est dans la bonne zone
-            player.zone.y == zone.y){
-            clients[i].connection.send(message);
-            console.log("Message envoyé à "+clients[indexUser].player.name);
-            //console.log("Message envoyé à "+clients[indexUser].connection.remoteAddress);
-        }
-    }
+var doJoin = function(player, indexUser){
+    //Send the new players to others, so they add him
+    player.user = false;
+    var message = {act:'join',player:player};
+    var json = JSON.stringify(message);
+    sendMessageMap(json,indexUser,player.map);
+    //On récupère la liste de tous les joueurs de la zone, que l'on envoie au joueur courant
+    var players = whoIsMap(player.map, indexUser);
+    message = {act:'getPlayerList',players:players};
+    json = JSON.stringify(message);
+    sendMessageToUser(json,indexUser);
+    sendPnj(player.map, indexUser);
 };
 
 /**
- * On envoie un message à un utilisateur en particulier
- * @param message le message à envoyer
- * @param indexUser l'index de l'utilisateur à qui envoyer
+ * Send all the PNJs in the Map
+ * @param {Map} map The Map where to find the PNJs
+ * @param {int} indexUser The user to send the results
+ * @returns {undefined}
  */
-var sendMessageToUser = function(message, indexUser){
-    clients[indexUser].connection.send(message);
-    console.log("Message envoyé à "+clients[indexUser].player.name);
-    //console.log("Message envoyé à "+clients[indexUser].connection.remoteAddress);
+var sendPnj = function(map, indexUser){
+    console.log(map);
+    db.collection('pnj', function(err, collection){
+        collection.find({map:map}).toArray(function(err, items) {
+            var message = {act:'getPnjList',pnjs:items};
+            var json = JSON.stringify(message);
+            sendMessageToUser(json,indexUser);
+        });
+    });
 };
 
 /**
- * Retourne tous les joueurs différents de indexUser présent dans la zone d'une map
- * @param map une carte
- * @param zone une zone de la carte
- * @param indexUser l'index de l'utilisateur à ne pas chercher
- * @return un tableau des joueurs présents dans la zone
+ * Return all the players present on the map, except indexUser
+ * @param {Map} map The Map where to search
+ * @param {index} indexUser The user not to retrieve
+ * @returns {Player Array} The array of all the presents players
  */
-var whoIsZone = function(map, zone, indexUser){
+var whoIsMap = function(map, indexUser){
     var array = new Array();
     for(var i=0; i<clients.length; i++){
         var player;
@@ -308,56 +224,68 @@ var whoIsZone = function(map, zone, indexUser){
         if(player &&
             i != indexUser && //Si l'utilisateur n'est pas celui qui a émi le message
             player.map.author == map.author && //S'il se situe sur la bonne carte
-            player.map.name == map.name && 
-            player.zone.x == zone.x && //Et s'il est dans la bonne zone
-            player.zone.y == zone.y){
+            player.map.title == map.title){
                 array.push(player);
             }
     }
     return array;
 };
 
-var sendPnjInZone = function(map, zone, indexUser){
-    var pnjs = new Array();
-    db.collection('pnj', function(err, collection){
-        collection.find({map:map,zone:zone}).toArray(function(err, items) {
-            var message = {act:'getPnjList',pnjs:items};
-            var json = JSON.stringify(message);
-            sendMessageToUser(json,indexUser);
-        });
-    });
+/**
+ * Send a message to players to tell them a player move
+ * @param {Player} player The moving player
+ * @param {int} indexUser The user index
+ * @returns {void}
+ */
+var doMove = function(player, indexUser){
+    //Send the moving player to others so he moves to them too
+    player.user = false;
+    player.isMoving = false;
+    var message = {act:'move',player:player};
+    var json = JSON.stringify(message);
+    sendMessageMap(json,indexUser,player.map);
 };
 
-var doSaveMap = function(name, zones, tileSets, obstacles){
-    var fs = require('fs');
-    var stream = fs.createWriteStream("../www/Shared/Maps/u0000001/"+name+".js");
-    var width = zones.length;
-    var height = 0;
-    for(var i=0; i<width; i++)if(zones[i].length > height)height = zones[i].length;
-    stream.once('open', function(fd) {
-        stream.write("var newMap = function(){\n");
-        stream.write("this.width = "+width+";\n");
-        stream.write("this.height = "+height+";\n");  
-        stream.write("this.tileSets = "+JSON.stringify(tileSets)+";\n");  
-        stream.write("this.zones = "+JSON.stringify(zones)+";\n");  
-        stream.write("this.obstacles = "+JSON.stringify(obstacles)+";\n");  
-        stream.write("}");  
-    });
-    console.log("Carte sauvegardée : "+name);
-};
-
+/**
+ * Send a message to players to tell them a player change Map
+ * Send the player list and pnj list to the changing player
+ * @param {Player} player The changing map player
+ * @param {Map} oldMap The old Map
+ * @param {Map} newMap The new Map
+ * @param {int} indexUser The user index
+ * @returns {void}
+ */
 var doChangeMap = function(player, oldMap, newMap, indexUser){
-    //On envoie le joueur qui change de zone aux joueurs, pour qu'ils le change aussi
+    //Send the moving player to others so he moves to them too
     player.user = false;
     var message = {act:'changeMap',player:player,oldMap:oldMap,newMap:newMap};
     var json = JSON.stringify(message);
     sendMessageMap(json,indexUser,oldMap);
     sendMessageMap(json,indexUser,newMap);
-    //On récupère la liste de tous les joueurs de la zone, que l'on envoie au joueur courant
-    var players = whoIsZone(player.map, player.zone, indexUser);
+    //We send the player list in the new map to the changing player
+    var players = whoIsMap(player.map, indexUser);
     message = {act:'getPlayerList',players:players};
     json = JSON.stringify(message);
     sendMessageToUser(json,indexUser);
-    //On récupère la liste de tous les pnjs de la zone, que l'on envoie au joueur courant
-    sendPnjInZone(player.map, player.zone, indexUser);
+    //We send the pnj list in the new map to the changing player
+    sendPnj(player.map, indexUser);
+};
+
+var doSaveMap = function(name, tiles, tileSets, obstacles){
+    var fs = require('fs');
+    var stream = fs.createWriteStream("../www/js/Maps/u0000001/"+name+".js");
+    
+    var width = 20;
+    var height = 15;
+    
+    stream.once('open', function(fd) {
+        stream.write("var newMap = function(){\n");
+        stream.write("this.width = "+width+";\n");
+        stream.write("this.height = "+height+";\n");  
+        stream.write("this.tileSets = "+JSON.stringify(tileSets)+";\n");  
+        stream.write("this.tiles = "+JSON.stringify(tiles)+";\n");  
+        stream.write("this.obstacles = "+JSON.stringify(obstacles)+";\n");  
+        stream.write("};");  
+    });
+    console.log("Saved Map : "+name);
 };

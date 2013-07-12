@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title></title>
+        <link rel="stylesheet" type="text/css" href="css/editor.css" media="screen" />
+        <script src="js/lib/jquery-2.0.2.min.js"></script>
+        <script src="http://localhost:8080/socket.io/socket.io.js"></script>
+        <script src="js/Classes/Socket.js"></script>
+        <script src="js/Classes/EditorMap.js"></script>
+        <script src="js/Classes/Editor.js"></script>
+        <script src="js/Classes/Canvas.js"></script>
+        <script src="js/Classes/others.js"></script>
+        <script src="js/Classes/Drawer.js"></script>
+        <script src="js/Classes/TileSet.js"></script>
+    </head>
+    <body>
+        <div id="div_container">
+            <h1>Map Editor :</h1>
+            <div id="div_map">
+                <canvas id="canvas"></canvas>
+            </div>
+            <div id="div_menu">
+                TileSet : 
+                <select id="select_tileset">
+                    <!--<option value="tile.png">plaines.png</option>-->
+                </select><br>
+                <canvas id="tileSet"></canvas><br>
+                Layer : 
+                <img src="img/editor/1_red.png" id="number_1" class="layer_number" alt="1" title="1" onclick="if(EditorMap)EditorMap.setCurrentLayer(0);">
+                <img src="img/editor/2_blue.png" id="number_2" class="layer_number" alt="2" title="2" onclick="if(EditorMap)EditorMap.setCurrentLayer(1);">
+                <img src="img/editor/3_blue.png" id="number_3" class="layer_number" alt="3" title="3" onclick="if(EditorMap)EditorMap.setCurrentLayer(2);">
+                <img src="img/editor/obs_blue.png" id="obstacles" class="layer_number" alt="obs" title="obs" onclick="if(EditorMap)EditorMap.setCurrentLayer(-1);">
+                </br>
+            </div>
+            <div id="options">
+                <input type="text" id="mapName" style="width:90px;"/><a onclick="EditorMap.save();">Save</a>
+            </div>
+        </div>
+        <script>
+        $(document).ready(function() {
+            Editor();
+            Editor.launch();
+        });
+        </script>
+    </body>
+</html>

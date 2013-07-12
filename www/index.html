@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script src="js/lib/jquery-2.0.2.min.js"></script>
+        <script src="http://localhost:8080/socket.io/socket.io.js"></script>
+        <script src="js/Classes/Canvas.js"></script>
+        <script src="js/Classes/Map.js"></script>
+        <script src="js/Classes/Drawer.js"></script>
+        <script src="js/Classes/spriteL.js"></script>
+        <script src="js/Classes/Animation.js"></script>
+        <script src="js/Classes/Motor.js"></script>
+        <script src="js/Classes/Player.js"></script>
+        <script src="js/Classes/Events.js"></script>
+        <script src="js/Classes/Socket.js"></script>
+        <script src="js/Classes/Pnj.js"></script>
+        <script src="js/Classes/Init.js"></script>
+        <script src="js/Classes/others.js"></script>
+    </head>
+    <body>
+        <center>
+        <canvas id="canvas" style="border: 1px solid black;"></canvas><br>
+        <input type="text" id="pseudo" />
+        <a onclick="clickme();this.onclick='';">Rejoindre</a>
+        </center>
+        <script>
+            var clickme = function(){
+                var pseudo = $("#pseudo").val();
+                Init.join(pseudo);
+            };
+        </script>
+    </body>
+</html>
