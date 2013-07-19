@@ -9,6 +9,7 @@ var Init = function(){
         new Map();
         new Canvas($("#canvas").get(0));
         Canvas.init(this.getTileSetArray(), this.getSpriteArray());
+        new MessageManager();
     };
     
     /**

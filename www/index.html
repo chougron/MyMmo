@@ -11,24 +11,35 @@
         <script src="js/Classes/spriteL.js"></script>
         <script src="js/Classes/Animation.js"></script>
         <script src="js/Classes/Motor.js"></script>
+        <script src="js/Classes/Thing.js"></script>
         <script src="js/Classes/Player.js"></script>
         <script src="js/Classes/Events.js"></script>
         <script src="js/Classes/Socket.js"></script>
         <script src="js/Classes/Pnj.js"></script>
         <script src="js/Classes/Init.js"></script>
         <script src="js/Classes/others.js"></script>
+        <script src="js/Classes/Message.js"></script>
+        <script src="js/Classes/MessageManager.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/main.css" media="screen" />
     </head>
     <body>
-        <center>
-        <canvas id="canvas" style="border: 1px solid black;"></canvas><br>
+        <div id="ecranJeu">
+            <div id="chat">
+                <form id="chat_form">
+                    <input type="text" name="message" id="chat_message"/>
+                </form>
+            </div>
+            <canvas id="canvas"></canvas><br>
+        </div>
+    <center>
         <input type="text" id="pseudo" />
-        <a onclick="clickme();this.onclick='';">Rejoindre</a>
-        </center>
-        <script>
-            var clickme = function(){
+        <a onclick="clickme(); this.onclick = '';">Rejoindre</a>
+    </center>
+    <script>
+            var clickme = function() {
                 var pseudo = $("#pseudo").val();
                 Init.join(pseudo);
             };
-        </script>
-    </body>
+    </script>
+</body>
 </html>

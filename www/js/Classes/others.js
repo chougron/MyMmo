@@ -65,6 +65,14 @@ var Coords = function(x,y){
         var y = Math.floor(coords.y/tileSize)+1;
         return new Coords(x,y);
     };
+    
+    /**
+     * Return a new Coords Object, transformed into px
+     * @returns {Coords} The new Coords
+     */
+    this.toPx = function(){
+        return new Coords(this.x * Drawer.tileSize, this.y * Drawer.tileSize);
+    };
 };
 
 

@@ -32,7 +32,7 @@ db.open(function(err, db) {
                     coords:{x:6,y:8},
                     block:false,
                     onWalk:"var NEWfONCTION = function(parameters){PLAYER.changeMap('u0000001','Maison',{x:11,y:12});}",
-                    onAct:"var NEWfONCTION = function(parameters){alert(\"What a great door !\");}",
+                    onAct:"var NEWfONCTION = function(parameters){this.speak(\"What a great door !\");}",
                     onInit:"var NEWfONCTION = function(parameters){}",
                     onClose:"var NEWfONCTION = function(parameters){}"
                 },
@@ -42,7 +42,7 @@ db.open(function(err, db) {
                     coords:{x:11,y:12},
                     block:false,
                     onWalk:"var NEWfONCTION = function(parameters){PLAYER.changeMap('u0000001','ForestHouse',{x:6,y:8});}",
-                    onAct:"var NEWfONCTION = function(parameters){alert(\"What a great door !\");}",
+                    onAct:"var NEWfONCTION = function(parameters){this.speak(\"What a great door !\");}",
                     onInit:"var NEWfONCTION = function(parameters){}",
                     onClose:"var NEWfONCTION = function(parameters){}"
                 },
@@ -52,7 +52,7 @@ db.open(function(err, db) {
                     coords:{x:7,y:9},
                     block:true,
                     onWalk:"var NEWfONCTION = function(parameters){}",
-                    onAct:"var NEWfONCTION = function(parameters){alert(\"Thierry's House.\");}",
+                    onAct:"var NEWfONCTION = function(parameters){this.speak(\"Thierry's House.\");}",
                     onInit:"var NEWfONCTION = function(parameters){}",
                     onClose:"var NEWfONCTION = function(parameters){}"
                 },
@@ -62,7 +62,7 @@ db.open(function(err, db) {
                     coords:{x:9,y:7},
                     block:true,
                     onWalk:"var NEWfONCTION = function(parameters){}",
-                    onAct:"var NEWfONCTION = function(parameters){alert(\"Hello, I'm Thierry.\");}",
+                    onAct:"var NEWfONCTION = function(parameters){this.speak(\"Hello, I'm Thierry.\");}",
                     onInit:"var NEWfONCTION = function(parameters){}",
                     onClose:"var NEWfONCTION = function(parameters){}"
                 }
@@ -121,6 +121,9 @@ io.sockets.on('connection', function(socket){
             case 'changeMap':
                 clients[index].player = message.player;
                 doChangeMap(message.player, message.oldMap, message.newMap, index);
+                break;
+            case 'chat':
+                doChat(message.content,message.player,index);
                 break;
         }
     });
@@ -271,6 +274,14 @@ var doChangeMap = function(player, oldMap, newMap, indexUser){
     sendPnj(player.map, indexUser);
 };
 
+/**
+ * Save an edited map to a js file
+ * @param {String} name The name of the Map
+ * @param {Array} tiles The map content layers
+ * @param {Array} tileSets The different tilesets used
+ * @param {Array} obstacles The obstacle layer
+ * @returns {void}
+ */
 var doSaveMap = function(name, tiles, tileSets, obstacles){
     var fs = require('fs');
     var stream = fs.createWriteStream("../www/js/Maps/u0000001/"+name+".js");
@@ -288,4 +299,18 @@ var doSaveMap = function(name, tiles, tileSets, obstacles){
         stream.write("};");  
     });
     console.log("Saved Map : "+name);
+};
+
+/**
+ * Send a chat message to all the people on the map
+ * @param {String} content The message
+ * @param {Player} player The player talking
+ * @param {int} indexUser The user talking
+ * @returns {void}
+ */
+var doChat = function(content,player,indexUser){
+    player.user = false;
+    var message = {act:'chat',content:content,player:player};
+    var json = JSON.stringify(message);
+    sendMessageMap(json,indexUser,player.map);
 };

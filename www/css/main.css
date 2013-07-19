@@ -1,0 +1,24 @@
+#ecranJeu{
+    width:642px;
+    margin:auto;
+    height:482px;
+    position: relative;
+}
+
+#chat{
+    width: 40%;
+    position: absolute;
+    bottom:1px;
+    left:1px;
+}
+
+#chat_message{
+    width: 100%;
+    border: none;
+    background: rgba(0,0,0,0.5);
+    color:white;
+}
+
+#canvas{
+    border: 1px solid black;
+}

@@ -1,7 +1,8 @@
 var Player = function(){
+    Thing.call(this);
+    
     this.name = '';
     this.map = {'author':'name','title':''};
-    this.coords = new Coords(0,0);
     this.animation = new Animation();
     this.cptTick = 0;
     this.isMoving = false;

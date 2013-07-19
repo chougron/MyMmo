@@ -26,6 +26,9 @@ var Socket = function(){
             case 'changeMap':
                 Socket.doChangeMap(data.player, data.oldMap, data.newMap);
                 break;
+            case 'chat':
+                Socket.doChat(data.content,data.player);
+                break;
         }
     });
     
@@ -96,5 +99,20 @@ var Socket = function(){
             Map.removePlayer(player);
         if(Map.equals(newMap))
             Map.addPlayer(player.name, player.animation.sprite, player.animation.direction, new Coords(player.coords.x, player.coords.y));
+    };
+    
+    /**
+     * Make a player talk
+     * @param {String} content
+     * @param {BDD Player} player
+     * @returns {void}
+     */
+    Socket.doChat = function(content,player){
+        for(var i=0; i<Map.players.length; i++){
+            if(Map.players[i].name == player.name){
+                Map.players[i].speak(content);
+                break;
+            }
+        }
     };
 };

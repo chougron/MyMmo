@@ -1,4 +1,5 @@
 var Pnj = function(){
+    Thing.call(this);
     
     var _currentPNJ = this;
     
@@ -8,7 +9,6 @@ var Pnj = function(){
     this.onInit = null;
     this.onClose = null;
     this.map = null;
-    this.coords = null;
     this.block = null;
     
     /**
