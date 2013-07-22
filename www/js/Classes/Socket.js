@@ -29,6 +29,12 @@ var Socket = function(){
             case 'chat':
                 Socket.doChat(data.content,data.player);
                 break;
+            case 'getFiles':
+                Socket.doGetFiles(data.files);
+                break;
+            case 'loadMap':
+                Socket.doLoadMap(data.map);
+                break;
         }
     });
     
@@ -114,5 +120,23 @@ var Socket = function(){
                 break;
             }
         }
+    };
+    
+    /**
+     * Load the image files
+     * @param {Array} files The files to load
+     * @returns {void}
+     */
+    Socket.doGetFiles = function(files){
+        FilesManager.doGetFromDB(files);
+    };
+    
+    /**
+     * Load the map requested
+     * @param {BDD Map} map
+     * @returns {void}
+     */
+    Socket.doLoadMap = function(map){
+        Map.doLoadMap(map);
     };
 };

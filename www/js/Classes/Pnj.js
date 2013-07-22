@@ -1,8 +1,6 @@
 var Pnj = function(){
     Thing.call(this);
     
-    var _currentPNJ = this;
-    
     this.animation = new Animation();
     this.onWalk = null;
     this.onAct = null;
@@ -10,6 +8,7 @@ var Pnj = function(){
     this.onClose = null;
     this.map = null;
     this.block = null;
+    this._id;   //The ID in the DB
     
     /**
      * Hydrate a PNJ from a BDD Pnj
@@ -21,9 +20,9 @@ var Pnj = function(){
         else this.animation = null;
         
         this.map = _pnj.map;
-        this.zone = _pnj.zone;
         this.coords = new Coords(_pnj.coords.x, _pnj.coords.y);
         this.block = _pnj.block;
+        this._id = _pnj._id;
         
         eval(_pnj.onWalk);
         this.onWalk = NEWfONCTION;

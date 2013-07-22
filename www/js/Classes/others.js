@@ -68,10 +68,13 @@ var Coords = function(x,y){
     
     /**
      * Return a new Coords Object, transformed into px
+     * The base size is the one of the first layer of the Map
      * @returns {Coords} The new Coords
      */
     this.toPx = function(){
-        return new Coords(this.x * Drawer.tileSize, this.y * Drawer.tileSize);
+        var sizeX = FilesManager.tilesets[Map.tileSets[0]].width;
+        var sizeY = FilesManager.tilesets[Map.tileSets[0]].height;
+        return new Coords(this.x * sizeX, this.y * sizeY);
     };
 };
 

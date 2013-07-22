@@ -17,57 +17,19 @@ var io = require('socket.io').listen(server);
 var mongo = require('mongodb'),
         Server = mongo.Server,
         Db = mongo.Db;
+var ObjectID = require('mongodb').ObjectID;
+
 var dbServer = new Server('localhost', 27017, {auto_reconnect: true});
 var db = new Db('test', dbServer);
+
+var dbInit = require('./dbInit');
 
 db.open(function(err, db) {
   if(!err) {
       db.authenticate('root', 'root', function(){ //Change here with your credentials
-          db.collection('pnj', function(err, collection){
-            collection.remove();
-            collection.insert([
-                {
-                    animation:null,
-                    map:{author:"u0000001", title:"ForestHouse"},
-                    coords:{x:6,y:8},
-                    block:false,
-                    onWalk:"var NEWfONCTION = function(parameters){PLAYER.changeMap('u0000001','Maison',{x:11,y:12});}",
-                    onAct:"var NEWfONCTION = function(parameters){this.speak(\"What a great door !\");}",
-                    onInit:"var NEWfONCTION = function(parameters){}",
-                    onClose:"var NEWfONCTION = function(parameters){}"
-                },
-                {
-                    animation:null,
-                    map:{author:"u0000001", title:"Maison"},
-                    coords:{x:11,y:12},
-                    block:false,
-                    onWalk:"var NEWfONCTION = function(parameters){PLAYER.changeMap('u0000001','ForestHouse',{x:6,y:8});}",
-                    onAct:"var NEWfONCTION = function(parameters){this.speak(\"What a great door !\");}",
-                    onInit:"var NEWfONCTION = function(parameters){}",
-                    onClose:"var NEWfONCTION = function(parameters){}"
-                },
-                {
-                    animation : {sprite:1,direction:2,action:2},
-                    map:{author:"u0000001", title:"ForestHouse"},
-                    coords:{x:7,y:9},
-                    block:true,
-                    onWalk:"var NEWfONCTION = function(parameters){}",
-                    onAct:"var NEWfONCTION = function(parameters){this.speak(\"Thierry's House.\");}",
-                    onInit:"var NEWfONCTION = function(parameters){}",
-                    onClose:"var NEWfONCTION = function(parameters){}"
-                },
-                {
-                    animation : {sprite:0,direction:2,action:2},
-                    map:{author:"u0000001", title:"Maison"},
-                    coords:{x:9,y:7},
-                    block:true,
-                    onWalk:"var NEWfONCTION = function(parameters){}",
-                    onAct:"var NEWfONCTION = function(parameters){this.speak(\"Hello, I'm Thierry.\");}",
-                    onInit:"var NEWfONCTION = function(parameters){}",
-                    onClose:"var NEWfONCTION = function(parameters){}"
-                }
-            ]);
-          });
+          dbInit.imageFile(db);
+          dbInit.pnj(db);
+          dbInit.map(db);
       });
     console.log((new Date()) + " Db connected correctly");
   }
@@ -125,11 +87,17 @@ io.sockets.on('connection', function(socket){
             case 'chat':
                 doChat(message.content,message.player,index);
                 break;
+            case 'getFiles':
+                doGetFiles(index);
+                break;
+            case 'loadMap':
+                doLoadMap(message.map,index);
+                break;
         }
     });
 
     // user disconnected
-    socket.on('disconnect', function(connection) {
+    socket.on('disconnect', function(connection) { //TODO: send the disconnection to other users on map
         console.log((new Date()) + " Peer disconnected.");
         // remove user from the list of connected clients
         clients.splice(index, 1, "NULL");
@@ -150,7 +118,9 @@ io.sockets.on('connection', function(socket){
  */
 var sendMessageToUser = function(message, indexUser){
     clients[indexUser].connection.send(message);
-    console.log("Message sent to "+clients[indexUser].player.name);
+    
+    if(clients[indexUser].player)
+        console.log("Message sent to "+clients[indexUser].player.name);
 };
 
 /**
@@ -275,7 +245,7 @@ var doChangeMap = function(player, oldMap, newMap, indexUser){
 };
 
 /**
- * Save an edited map to a js file
+ * Save an edited map to the DB and to a js file
  * @param {String} name The name of the Map
  * @param {Array} tiles The map content layers
  * @param {Array} tileSets The different tilesets used
@@ -288,7 +258,21 @@ var doSaveMap = function(name, tiles, tileSets, obstacles){
     
     var width = 20;
     var height = 15;
+    //save in DB
+    var Map = {
+        title : name,
+        author : 'u0000001',
+        width : width,
+        height : height,
+        tileSets : tileSets,
+        tiles : tiles,
+        obstacles : obstacles
+    };
+    db.collection('map', function(err, collection){
+        collection.insert([Map]);
+    });
     
+    //Save in file
     stream.once('open', function(fd) {
         stream.write("var newMap = function(){\n");
         stream.write("this.width = "+width+";\n");
@@ -313,4 +297,47 @@ var doChat = function(content,player,indexUser){
     var message = {act:'chat',content:content,player:player};
     var json = JSON.stringify(message);
     sendMessageMap(json,indexUser,player.map);
+};
+
+/**
+ * Send the image files to load.
+ * @param {int} indexUser The user to send to
+ * @returns {void}
+ */
+var doGetFiles = function(indexUser){
+    db.collection('imageFile', function(err, collection){
+        collection.find().toArray(function(err, items) {
+            var files = {
+                sprites: new Array(),
+                tilesets: new Array(),
+                itemsets: new Array()
+            };
+            
+            var file = items.shift();
+            while(file){
+                files[file.type+"s"].push(file);
+                file = items.shift();
+            }
+            
+            var message = {act:'getFiles',files:files};
+            var json = JSON.stringify(message);
+            sendMessageToUser(json,indexUser);
+        });
+    });
+};
+
+/**
+ * Get the map we want to load and send it to the right user.
+ * @param {{author,name}} map The Map we want to retrieve
+ * @param {int} indexUser The user to send the map to
+ * @returns {void}
+ */
+var doLoadMap = function(map,indexUser){
+    db.collection('map',function(err, collection){
+        collection.find({title:map.title,author:map.author}).nextObject(function(err,item){
+            var message = {act:'loadMap',map:item};
+            var json = JSON.stringify(message);
+            sendMessageToUser(json,indexUser);
+        });
+    });
 };

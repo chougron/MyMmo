@@ -42,8 +42,8 @@ var Animation = function(){
      */
     this.draw = function(x,y){
         var ligneSprite = this.direction*3 + this.action;
-        var tmpSprite = Canvas.sprites[this.sprite];
-        Drawer.drawAnimation(x, y, tmpSprite, ligneSprite, this.cptAnimation);
+        var tmpSprite = FilesManager.sprites[this.sprite];
+        Drawer.drawAnimation(x, y, tmpSprite.img, ligneSprite, this.cptAnimation);
         this.tick();
     };
     

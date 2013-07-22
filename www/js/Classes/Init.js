@@ -8,34 +8,10 @@ var Init = function(){
         new Motor();
         new Map();
         new Canvas($("#canvas").get(0));
-        Canvas.init(this.getTileSetArray(), this.getSpriteArray());
+        Canvas.init();
         new MessageManager();
-    };
-    
-    /**
-     * Return the array of all the used Tilesets
-     * @returns {Array}
-     */
-    Init.getTileSetArray = function(){
-        var array = [
-            "plaines", //0
-            "plaines_objets", //1
-            "murs", //2
-            "mobilier" //3
-        ];
-        return array;
-    };
-    
-    /**
-     * Returns the array of all the used Sprites
-     * @returns {Array}
-     */
-    Init.getSpriteArray = function(){
-        var array = [
-            "player", //0
-            "paneau" //1
-        ]; 
-        return array;
+        new FilesManager();
+        FilesManager.getFromDB();
     };
     
     /**

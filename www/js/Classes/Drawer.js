@@ -4,19 +4,23 @@
  */
 var Drawer = function(){
     Drawer.tileSet;
-    Drawer.tileSetWidth;
+    Drawer.numberWidth;
     
-    Drawer.tileSize = 32; //Size of a square tile, in px
+    Drawer.width = 32; //Size of a square tile, in px
+    Drawer.height;
     
     /**
      * Set a new tileSet for the Drawer
-     * @param {int} number The tileSet number
-     * @returns {undefined}
+     * @param {int} number The tileSet number in the FilesManager Array
+     * @returns {void}
      */
-    Drawer.setTileSet = function(number){
-        Drawer.tileSet = Canvas.tileSets[number];
-        if(Canvas.tileSets[number] != undefined)
-            Drawer.tileSetWidth = Canvas.tileSets[number].width / Drawer.tileSize;
+    Drawer.setTileSet = function(number){ 
+        Drawer.height = FilesManager.tilesets[number].height;
+        Drawer.width = FilesManager.tilesets[number].width;
+        
+        Drawer.tileSet = FilesManager.tilesets[number].img;
+        if(FilesManager.tilesets[number].img != undefined)
+            Drawer.numberWidth = FilesManager.tilesets[number].img.width / Drawer.width;
     };
     
     /**
@@ -28,14 +32,14 @@ var Drawer = function(){
      * @returns {void}
      */
     Drawer.drawFromTileSet = function(x,y,value, canvas){
-        var xSourceN = value % Drawer.tileSetWidth;
-        if(xSourceN == 0) xSourceN = Drawer.tileSetWidth;
-        var ySourceN = Math.ceil(value / Drawer.tileSetWidth);
-        var xSource = (xSourceN - 1) * Drawer.tileSize;
-        var ySource = (ySourceN - 1) * Drawer.tileSize;
-        var xContext = (x - 1) * Drawer.tileSize;
-        var yContext = (y - 1) * Drawer.tileSize;
-        canvas.context.drawImage(Drawer.tileSet, xSource, ySource, Drawer.tileSize, Drawer.tileSize, xContext, yContext, Drawer.tileSize, Drawer.tileSize);
+        var xSourceN = value % Drawer.numberWidth;
+        if(xSourceN == 0) xSourceN = Drawer.numberWidth;
+        var ySourceN = Math.ceil(value / Drawer.numberWidth);
+        var xSource = (xSourceN - 1) * Drawer.width;
+        var ySource = (ySourceN - 1) * Drawer.width;
+        var xContext = (x - 1) * Drawer.width;
+        var yContext = (y - 1) * Drawer.width;
+        canvas.context.drawImage(Drawer.tileSet, xSource, ySource, Drawer.width, Drawer.width, xContext, yContext, Drawer.width, Drawer.width);
     };
     
     /**
@@ -48,12 +52,12 @@ var Drawer = function(){
      * @returns {void}
      */
     Drawer.drawAnimation = function(x,y,image,ligne,cpt){
-        var xSource = cpt * Drawer.tileSize;
-        var ySource = ligne * Math.ceil(Drawer.tileSize * 1.5);
-        var xContext = (x - 1) * Drawer.tileSize;
-        var yContext = (y - 1) * Math.ceil(Drawer.tileSize) - Math.ceil(Drawer.tileSize * 0.5);
+        var xSource = cpt * Drawer.width;
+        var ySource = ligne * Math.ceil(Drawer.width * 1.5);
+        var xContext = (x - 1) * Drawer.width;
+        var yContext = (y - 1) * Math.ceil(Drawer.width) - Math.ceil(Drawer.width * 0.5);
         
-        Canvas.context.drawImage(image, xSource, ySource, Drawer.tileSize, Math.ceil(Drawer.tileSize * 1.5), xContext, yContext, Drawer.tileSize, Math.ceil(Drawer.tileSize * 1.5));
+        Canvas.context.drawImage(image, xSource, ySource, Drawer.width, Math.ceil(Drawer.width * 1.5), xContext, yContext, Drawer.width, Math.ceil(Drawer.width * 1.5));
     };
     
     /**

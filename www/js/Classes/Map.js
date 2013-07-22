@@ -2,7 +2,7 @@ var Map = function(){
     Map.author;
     Map.width;
     Map.height;
-    Map.tileSets = new Array();
+    Map.tileSets = new Array(); //Array of tilesets ID corresponding to the imageFiles
     Map.obstacles = new Array();
     
     //The Map
@@ -20,6 +20,7 @@ var Map = function(){
      * @returns {void}
      */
     Map.loadMap = function(author, _name){
+        Motor.stop();
         Map.name = _name;
         Map.author = author;
         Map.title = _name;
@@ -27,25 +28,24 @@ var Map = function(){
         Map.pnjs = new Array();
         Map.players = new Array();
         
-        console.log(Map.name);
-        console.log(Map.title);
-        $.getScript("js/Maps/"+author+"/"+_name+".js", function(){
-            Map.doLoadMap();
-        });
+        var message = {act:'loadMap',map:{author:author,title:_name}};
+        var toSend = JSON.stringify(message);
+        Socket.connection.send(toSend);
     };
     
     /**
      * Hydrate the Map with the file content
      * Then launch the Motor
-     * @returns {void}
+     * @param {type} map
+     * @returns {undefined}
      */
-    Map.doLoadMap = function(){
-        var _newMap = new newMap();
-        Map.width = _newMap.width;
-        Map.height = _newMap.height;
-        Map.tileSets = _newMap.tileSets;
-        Map.obstacles = _newMap.obstacles;
-        Map.tiles = _newMap.tiles;
+    Map.doLoadMap = function(map){
+        
+        Map.width       = map.width;
+        Map.height      = map.height;
+        Map.tileSets    = map.tileSets;
+        Map.obstacles   = map.obstacles;
+        Map.tiles       = map.tiles;
         
         for(var i=0; i<Map.height * Map.width;i++)
             Map.repaint[i]=true;
