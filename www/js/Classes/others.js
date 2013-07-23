@@ -10,7 +10,7 @@ var Coords = function(x,y){
     
     /**
      * Transform the coordinate to a map index
-     * @param {int} mapWidth The map width
+     * @param {int} mapWidth The map width (in tiles)
      * @param {Boolean} floor round to floor or ceil
      * @returns {int} The index of the tile in the Map
      */
@@ -60,7 +60,7 @@ var Coords = function(x,y){
      * @param {int} tileSize The tile square size (in px)
      * @returns {Coords} The tile Coords
      */
-    this.pxToTile = function(coords, tileSize){
+    this.pxToTile = function(coords, tileSize){ //TODO: change this tileSize
         var x = Math.floor(coords.x/tileSize)+1;
         var y = Math.floor(coords.y/tileSize)+1;
         return new Coords(x,y);

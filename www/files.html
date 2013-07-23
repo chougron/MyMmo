@@ -4,21 +4,48 @@
         <title>Files Manager</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <script src="js/lib/jquery-2.0.2.min.js"></script>
+        <script src="js/lib/jquery-ui-1.10.3.custom.min.js"></script>
         <script src="http://localhost:8080/socket.io/socket.io.js"></script>
         <script src="js/apps/FilesEditor.js"></script>
         <script src="js/Classes/Socket.js"></script>
         <script src="js/Classes/ImageFile.js"></script>
         <script src="js/Classes/FilesManager.js"></script>
-        
+        <link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" media="screen" />
+
     </head>
     <body>
-        <div id="list" style="float: left; width: 20%;">
-            <ul id="list_sprite"></ul>
-            <ul id="list_tileset"></ul>
-            <ul id="list_itemset"></ul>
+        <div id="left_panel" style="float: left; width: 20%;">
+            <h2>Liste des fichiers :</h2>
+            <a id="refresh_list">Actualiser</a><br/>
+            <div id="list">
+                <h3>Sprites :</h3>
+                <div>
+                    <ul id="list_sprite"></ul>
+                </div>
+                <h3>Tilesets :</h3>
+                <div>
+                    <ul id="list_tileset"></ul>
+                </div>
+                <h3>Itemsets :</h3>
+                <div>
+                    <ul id="list_itemset"></ul>
+                </div>
+            </div>
         </div>
-        <div id="editor" style="width: 75%; float: right;">
+        <div id="editor" style="width: 50%; float: left; margin: 20px;">
             <img id="preview" alt src/>
+        </div>
+        <div id="options" style="width: 25%; float:right;">
+            <h2>Options :</h2>
+            <form id="opt_form">
+                Largeur d'une tile (px) :<br/>
+                <input type="text" name="width" id="opt_width"/><br/>
+                <br/>
+                Hauteur d'une tile (px) :<br/>
+                <input type="text" name="height" id="opt_height"/><br/>
+                <br/>
+                <input type='submit' value='Valider'/>
+            </form>
         </div>
     </body>
 </html>

@@ -1,10 +1,7 @@
 var FilesManager = function(){
-    FilesManager.sprites = new Array();
-    //TODO: Change this to a object array with the _id and the Files
+    FilesManager.sprites = {};
     FilesManager.tilesets = {};
-    //TODO: Change this to a object array with the _id and the Files
-    FilesManager.itemsets = new Array();
-    //TODO: Change this to a object array with the _id and the Files
+    FilesManager.itemsets = {};
     
     FilesManager.toLoad = -1;
     
@@ -24,6 +21,9 @@ var FilesManager = function(){
      * @returns {void}
      */
     FilesManager.doGetFromDB = function(files){
+        FilesManager.sprites = {};
+        FilesManager.tilesets = {};
+        FilesManager.itemsets = {};
         FilesManager.load(files.sprites,files.tilesets,files.itemsets);
     };
     
@@ -54,8 +54,7 @@ var FilesManager = function(){
                 FilesManager.checkReady();
             };
             
-            var index = FilesManager.sprites.push(tempSprite) - 1;
-            FilesManager.sprites[index].index = index;
+            FilesManager.sprites[tempSprite._id] = tempSprite;
             
             delete tempSprite;
             sprite = sprites.shift();
@@ -99,8 +98,7 @@ var FilesManager = function(){
                 FilesManager.checkReady();
             };
             
-            var index = FilesManager.itemsets.push(tempItemset) - 1;
-            FilesManager.itemsets[index].index = index;
+            FilesManager.itemsets[tempItemset._id] = tempItemset;
             
             delete tempItemset;
             itemset = itemsets.shift();
@@ -117,6 +115,8 @@ var FilesManager = function(){
         
         if(typeof FilesEditor != "undefined")
                 FilesEditor.ready();
+        if(typeof ItemsEditor != "undefined")
+                ItemsEditor.ready();
         
         console.log("Everything loaded.");
         return true;

@@ -24,6 +24,20 @@ var Drawer = function(){
     };
     
     /**
+     * Set an itemset for the Drawer
+     * @param {int} number The itemset number in the FilesManager Array
+     * @returns {void}
+     */
+    Drawer.setItemSet = function(number){
+        Drawer.height = FilesManager.itemsets[number].height;
+        Drawer.width = FilesManager.itemsets[number].width;
+        
+        Drawer.tileSet = FilesManager.itemsets[number].img;
+        if(FilesManager.itemsets[number].img != undefined)
+            Drawer.numberWidth = FilesManager.itemsets[number].img.width / Drawer.width;
+    };
+    
+    /**
      * Draw a tile of the tileSet (the value one) in the context 
      * @param {int} x The abscissa (in tiles) of where to draw
      * @param {int} y The ordinate (in tiles) of where to draw
@@ -78,18 +92,22 @@ var Drawer = function(){
      */
     Drawer.drawGrid = function(canvas){
         var context = canvas.context;
+        
+        var dWidth = parseInt(Drawer.width);
+        var dHeight = parseInt(Drawer.height);
 
         var width = canvas.width;
         var height = canvas.height;
+        
         context.beginPath();
         context.lineWidth = 1;
         context.strokeStyle = "#000";
 
-        for(var x=32; x<canvas.width; x+=32){
+        for(var x=dWidth; x<width; x+=dWidth){
             context.moveTo(x,0);
             context.lineTo(x,height);
         }
-        for(var y=32; y<canvas.height; y+=32){
+        for(var y=dHeight; y<height; y+=dHeight){
             context.moveTo(0,y);
             context.lineTo(width,y);
         }

@@ -4,6 +4,10 @@ process.title = 'Server';
 //The port we listen for WebSockets
 var WebSocketServerPort = 8080;
 
+//The www folder
+var WWWFolder = '../www';
+
+
 //Launch the listening
 var http = require('http');
 var server = http.createServer(function(request, response){});
@@ -30,6 +34,7 @@ db.open(function(err, db) {
           dbInit.imageFile(db);
           dbInit.pnj(db);
           dbInit.map(db);
+          dbInit.item(db);
       });
     console.log((new Date()) + " Db connected correctly");
   }
@@ -92,6 +97,21 @@ io.sockets.on('connection', function(socket){
                 break;
             case 'loadMap':
                 doLoadMap(message.map,index);
+                break;
+            case 'checkNewFiles':
+                doCheckNewFiles(index);
+                break;
+            case 'saveImageFile':
+                doSaveImageFile(message.data);
+                break;
+            case 'removeImageFile':
+                doRemoveImageFile(message.id);
+                break;
+            case 'getAllItems':
+                doGetAllItems(index);
+                break;
+            case 'saveItem':
+                doSaveItem(message.item,index);
                 break;
         }
     });
@@ -254,7 +274,7 @@ var doChangeMap = function(player, oldMap, newMap, indexUser){
  */
 var doSaveMap = function(name, tiles, tileSets, obstacles){
     var fs = require('fs');
-    var stream = fs.createWriteStream("../www/js/Maps/u0000001/"+name+".js");
+    var stream = fs.createWriteStream(WWWFolder+"/js/Maps/u0000001/"+name+".js");
     
     var width = 20;
     var height = 15;
@@ -339,5 +359,117 @@ var doLoadMap = function(map,indexUser){
             var json = JSON.stringify(message);
             sendMessageToUser(json,indexUser);
         });
+    });
+};
+
+/**
+ * Check if there are new imageFiles in the folders.
+ * @param {int} indexUser The index of the user making the demand
+ * @returns {void}
+ */
+var doCheckNewFiles = function(indexUser){
+    var fs = require('fs');
+    
+    var toAdd = new Array();
+    var tempFile = {
+        type : '',
+        name : '',
+        width : 0,
+        height: 0
+    };
+    db.collection('imageFile',function(err,collection){
+        //Let's start by the itemsets
+        var listItemsets = fs.readdirSync(WWWFolder+"/img/itemsets");
+        for(var i=0; i<listItemsets.length; i++){
+            var key = {type : 'itemset', name : listItemsets[i]};
+
+            var data = tempFile;
+            data.type = 'itemset';
+            data.name = listItemsets[i];
+
+            collection.update(key,{ $setOnInsert: data},{upsert:true});
+        }
+        //then the sprites
+        var listSprites = fs.readdirSync(WWWFolder+"/img/sprites");
+        for(var i=0; i<listSprites.length; i++){
+            var key = {type : 'sprite', name : listSprites[i]};
+
+            var data = tempFile;
+            data.type = 'sprite';
+            data.name = listSprites[i];
+
+            collection.update(key,{ $setOnInsert: data},{upsert:true});
+        }
+        //Finally the tilesets
+        var listTilesets = fs.readdirSync(WWWFolder+"/img/tilesets");
+        for(var i=0; i<listTilesets.length; i++){
+            var key = {type : 'tileset', name : listTilesets[i]};
+
+            var data = tempFile;
+            data.type = 'tileset';
+            data.name = listTilesets[i];
+
+            collection.update(key,{ $setOnInsert: data},{upsert:true});
+        }
+    });
+    doGetFiles(indexUser);
+};
+
+/**
+ * Update an Image File in the DB
+ * @param {imageFile} imageFile
+ * @returns {void}
+ */
+var doSaveImageFile = function(imageFile){
+    db.collection('imageFile', function(err,collection){
+        collection.update(
+                {_id : ObjectID(imageFile._id)},
+                {$set:{width : imageFile.width, height : imageFile.height}}
+        );
+    });
+};
+
+/**
+ * Remove an Image File from the DB
+ * @param {int} id The ID of the Image File
+ * @returns {void}
+ */
+var doRemoveImageFile = function(id){
+    db.collection('imageFile', function(err,collection){
+        collection.remove({_id : ObjectID(id)});
+    });
+};
+
+/**
+ * Retrieve and send all the items to the user
+ * @param {int} indexUser
+ * @returns {void}
+ */
+var doGetAllItems = function(indexUser){
+    db.collection('item', function(err,collection){
+        collection.find().toArray(function(err, items) {
+            var message = {act:'getAllItems',items:items};
+            var json = JSON.stringify(message);
+            sendMessageToUser(json,indexUser);
+        });
+    });
+};
+
+/**
+ * Update an item in the database, or create a new item if it doesn't exist
+ * @param {Item} item The item to save
+ * @param {int} indexUser The user index
+ * @returns {void}
+ */
+var doSaveItem = function(item,indexUser){
+    db.collection('item', function(err,collection){
+        collection.update(
+                {_id : ObjectID(item._id)},
+                {$set:{itemSet : item.itemSet, setNumber : item.setNumber, name : item.name}},
+                {upsert:true},
+                function(){
+                    doGetAllItems(indexUser); //Send all the items again
+                }
+        );
     });
 };

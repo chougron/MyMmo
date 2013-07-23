@@ -6,10 +6,38 @@
         <script src="js/lib/jquery-2.0.2.min.js"></script>
         <script src="http://localhost:8080/socket.io/socket.io.js"></script>
         <script src="js/apps/ItemsEditor.js"></script>
+        <script src="js/Classes/others.js"></script>
+        <script src="js/Classes/FilesManager.js"></script>
+        <script src="js/Classes/ImageFile.js"></script>
+        <script src="js/Classes/Thing.js"></script>
+        <script src="js/Classes/Item.js"></script>
         <script src="js/Classes/Socket.js"></script>
-        <link rel="stylesheet" type="text/css" href="css/main.css" media="screen" />
+        <script src="js/Classes/Drawer.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/items.css" media="screen" />
     </head>
     <body>
-
+        <h2>Liste des objets existants :</h2>
+        <ul id="item_list"><li id='add_item'>+</li></ul>
+        <div id="item">
+            <h2>Modification de l'objet :</h2>
+            <form id="item_form">
+                <div id="item_icon"></div>
+                Nom : <input type="text" id="item_name" /><br/>
+                <br/>
+                ItemSet :<br/>
+                <input type='text' id='item_itemset' disabled /><br/>
+                <br/>
+                SetNumber :<br/>
+                <input type='text' id='item_setnumber' disabled /><br/>
+                <br/>
+                <input type='submit' value='Sauvegarder' />
+            </form>
+        </div>
+        <div id="itemset">
+            <h2>Choisissez une icône pour l'objet :</h2>
+            <select id="itemset_select"></select>
+            <br/>
+            <canvas id="itemset_canvas"></canvas>
+        </div>
     </body>
 </html>

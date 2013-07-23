@@ -1,0 +1,65 @@
+#item{
+    background: white;
+    display: none;
+    position: absolute;
+    top:15%;
+    width: 38%;
+    left: 30%;
+    border: 1px solid black;
+    box-shadow: 7px 7px 2px #888888;
+    padding: 10px;
+    text-align: center;
+}
+
+#item #item_icon{
+    border: 1px solid black;
+    display: inline-block;
+    margin-right: 15px;
+    cursor: pointer;
+}
+
+#itemset{
+    background: white;
+    display: none;
+    position: absolute;
+    top:10%;
+    width: 58%;
+    left: 20%;
+    border: 1px solid black;
+    box-shadow: 7px 7px 2px #888888;
+    padding: 10px;
+    text-align: center;
+}
+
+#itemset h2{
+    text-align: center;
+}
+
+#itemset_canvas{
+    border: 1px solid black;
+    margin: auto;
+    cursor: pointer;
+}
+
+#item_list{
+    padding: 0;
+    margin: 0;
+}
+
+.item{
+    display: inline-block;
+    cursor: pointer;
+}
+
+#add_item{
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    padding: auto;
+    text-align: center;
+    cursor: pointer;
+}
+
+h2{
+    text-align: center;
+}

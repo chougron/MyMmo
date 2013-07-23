@@ -35,6 +35,9 @@ var Socket = function(){
             case 'loadMap':
                 Socket.doLoadMap(data.map);
                 break;
+            case 'getAllItems':
+                Socket.doGetAllItems(data.items);
+                break;
         }
     });
     
@@ -138,5 +141,14 @@ var Socket = function(){
      */
     Socket.doLoadMap = function(map){
         Map.doLoadMap(map);
+    };
+    
+    /**
+     * Load all the items
+     * @param {Array} items
+     * @returns {void}
+     */
+    Socket.doGetAllItems = function(items){
+        ItemsEditor.doGetAllItems(items);
     };
 };

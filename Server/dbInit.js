@@ -27,13 +27,13 @@ exports.imageFile = function(db){
                 height    :'32'
             },
             {
-                type      :'sprite',
+                type      :'sprite', //0 -> 4
                 name      :'player.png',
                 width     :'32',
                 height    :'32'
             },
             {
-                type      :'sprite',
+                type      :'sprite', //1 -> 5
                 name      :'paneau.png',
                 width     :'32',
                 height    :'32'
@@ -43,61 +43,70 @@ exports.imageFile = function(db){
                 name      :'IconSet2.png',
                 width     :'32',
                 height    :'32'
+            },
+            {
+                type      :'itemset',
+                name      :'IconSet.png',
+                width     :'24',
+                height    :'24'
             }
       ]);
     });
 };
 
 exports.pnj = function(db){
-    db.collection('pnj', function(err, collection){
-    collection.remove();
-    collection.insert([
-        {
-            animation:null,
-            map:{author:"u0000001", title:"ForestHouse"},
-            coords:{x:6,y:8},
-            block:false,
-            onWalk:"var NEWfONCTION = function(parameters){PLAYER.changeMap('u0000001','Maison',{x:11,y:12});}",
-            onAct:"var NEWfONCTION = function(parameters){this.speak(\"What a great door !\");}",
-            onInit:"var NEWfONCTION = function(parameters){}",
-            onClose:"var NEWfONCTION = function(parameters){}"
-        },
-        {
-            animation:null,
-            map:{author:"u0000001", title:"Maison"},
-            coords:{x:11,y:12},
-            block:false,
-            onWalk:"var NEWfONCTION = function(parameters){PLAYER.changeMap('u0000001','ForestHouse',{x:6,y:8});}",
-            onAct:"var NEWfONCTION = function(parameters){this.speak(\"What a great door !\");}",
-            onInit:"var NEWfONCTION = function(parameters){}",
-            onClose:"var NEWfONCTION = function(parameters){}"
-        },
-        {
-            animation : {sprite:1,direction:2,action:2},
-            map:{author:"u0000001", title:"ForestHouse"},
-            coords:{x:7,y:9},
-            block:true,
-            onWalk:"var NEWfONCTION = function(parameters){}",
-            onAct:"var NEWfONCTION = function(parameters){this.speak(\"Thierry's House.\");}",
-            onInit:"var NEWfONCTION = function(parameters){}",
-            onClose:"var NEWfONCTION = function(parameters){}"
-        },
-        {
-            animation : {sprite:0,direction:2,action:2},
-            map:{author:"u0000001", title:"Maison"},
-            coords:{x:9,y:7},
-            block:true,
-            onWalk:"var NEWfONCTION = function(parameters){}",
-            onAct:"var NEWfONCTION = function(parameters){this.speak(\"Hello, I'm Thierry.\");}",
-            onInit:"var NEWfONCTION = function(parameters){}",
-            onClose:"var NEWfONCTION = function(parameters){}"
-        }
-    ]);
-  });
+    db.collection('imageFile', function(err, collection){
+        collection.find({},{_id:1}).toArray(function(err, items){
+            db.collection('pnj', function(err, collection){
+            collection.remove();
+            collection.insert([
+                {
+                    animation:null,
+                    map:{author:"u0000001", title:"ForestHouse"},
+                    coords:{x:6,y:8},
+                    block:false,
+                    onWalk:"var NEWfONCTION = function(parameters){PLAYER.changeMap('u0000001','Maison',{x:11,y:12});}",
+                    onAct:"var NEWfONCTION = function(parameters){this.speak(\"What a great door !\");}",
+                    onInit:"var NEWfONCTION = function(parameters){}",
+                    onClose:"var NEWfONCTION = function(parameters){}"
+                },
+                {
+                    animation:null,
+                    map:{author:"u0000001", title:"Maison"},
+                    coords:{x:11,y:12},
+                    block:false,
+                    onWalk:"var NEWfONCTION = function(parameters){PLAYER.changeMap('u0000001','ForestHouse',{x:6,y:8});}",
+                    onAct:"var NEWfONCTION = function(parameters){this.speak(\"What a great door !\");}",
+                    onInit:"var NEWfONCTION = function(parameters){}",
+                    onClose:"var NEWfONCTION = function(parameters){}"
+                },
+                {
+                    animation : {sprite:items[5]._id,direction:2,action:2},
+                    map:{author:"u0000001", title:"ForestHouse"},
+                    coords:{x:7,y:9},
+                    block:true,
+                    onWalk:"var NEWfONCTION = function(parameters){}",
+                    onAct:"var NEWfONCTION = function(parameters){this.speak(\"Thierry's House.\");}",
+                    onInit:"var NEWfONCTION = function(parameters){}",
+                    onClose:"var NEWfONCTION = function(parameters){}"
+                },
+                {
+                    animation : {sprite:items[4]._id,direction:2,action:2},
+                    map:{author:"u0000001", title:"Maison"},
+                    coords:{x:9,y:7},
+                    block:true,
+                    onWalk:"var NEWfONCTION = function(parameters){}",
+                    onAct:"var NEWfONCTION = function(parameters){this.speak(\"Hello, I'm Thierry.\");}",
+                    onInit:"var NEWfONCTION = function(parameters){}",
+                    onClose:"var NEWfONCTION = function(parameters){}"
+                }
+            ]);
+          });
+        });
+    });
 };
 
 exports.map = function(db){
-    
     db.collection('imageFile', function(err, collection){
         collection.find({},{_id:1}).toArray(function(err, items){
             //ForestHouse
@@ -125,6 +134,23 @@ exports.map = function(db){
             db.collection('map', function(err, collection){
                 collection.remove();
                 collection.insert([ForestHouse,Maison]);
+            });
+        });
+    });
+};
+
+exports.item = function(db){
+    db.collection('imageFile', function(err, collection){
+        collection.find({},{_id:1}).toArray(function(err,items){
+            //Epee
+            var Epee = {
+                itemSet     : items[6]._id,
+                setNumber   : 1,
+                name        : 'Épee'
+            };
+            db.collection('item', function(err,collection){
+                collection.remove();
+                collection.insert([Epee]);
             });
         });
     });

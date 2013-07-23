@@ -18,4 +18,30 @@ var ImageFile = function(){
         this.name       = dbImageFile.name;
         this._id        = dbImageFile._id;
     };
+    
+    /**
+     * Update the ImageFile in the DB. It should already exists in.
+     * @returns {Boolean}
+     */
+    this.save = function(){
+        if(!this._id) return false;
+        
+        var message = {act : 'saveImageFile', data : this};
+        var toSend = JSON.stringify(message);
+        Socket.connection.send(toSend);
+        return true;
+    };
+    
+    /**
+     * Remove the ImageFile from the DB. It should already exists in.
+     * @returns {Boolean}
+     */
+    this.remove = function(){
+        if(!this._id) return false;
+        
+        var message = {act : 'removeImageFile', id : this._id};
+        var toSend = JSON.stringify(message);
+        Socket.connection.send(toSend);
+        return true;
+    };
 };
