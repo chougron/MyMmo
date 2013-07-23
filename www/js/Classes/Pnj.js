@@ -1,7 +1,7 @@
 var Pnj = function(){
     Thing.call(this);
     
-    this.animation = new Animation();
+    this.animation = null;
     this.onWalk = null;
     this.onAct = null;
     this.onInit = null;
@@ -16,7 +16,10 @@ var Pnj = function(){
      * @returns {void}
      */
     this.hydrate = function(_pnj){
-        if(_pnj.animation != null) this.animation.hydrate(_pnj.animation);
+        if(_pnj.animation != null){
+            this.animation  = new Animation();
+            this.animation.hydrate(_pnj.animation);
+        }
         else this.animation = null;
         
         this.map = _pnj.map;

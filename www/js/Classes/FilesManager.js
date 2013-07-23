@@ -45,6 +45,7 @@ var FilesManager = function(){
             var tempSprite      = new ImageFile();
             tempSprite.hydrate(sprite);
             tempSprite.img.src  = path;
+            tempSprite.spriteL = sprite.spriteL;
             tempSprite.type     = 'sprite';
             console.log("Loading sprite : "+sprite.name);
             

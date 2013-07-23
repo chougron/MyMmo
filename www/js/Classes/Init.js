@@ -21,7 +21,8 @@ var Init = function(){
      */
     Init.join = function(name){
         Map.loadMap("u0000001",'ForestHouse');
-        PLAYER = Map.addPlayer(name, 0, 'UP', {x:6, y:11});
+        var playerSprite = FilesManager.sprites[Object.keys(FilesManager.sprites)[0]]._id;
+        PLAYER = Map.addPlayer(name, playerSprite, 'UP', {x:6, y:11});
         PLAYER.user = true;
 
         var message = {'act':'join','player':PLAYER};

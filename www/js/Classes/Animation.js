@@ -83,6 +83,6 @@ var Animation = function(){
     this.tick = function(){
         var ligneSprite = this.direction*3 + this.action;
         this.cptAnimation++;
-        if(spriteL[this.sprite][ligneSprite] <= this.cptAnimation)this.cptAnimation = 0;
+        if(FilesManager.sprites[this.sprite].spriteL[ligneSprite] <= this.cptAnimation)this.cptAnimation = 0;
     };
 };

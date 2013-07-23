@@ -28,12 +28,14 @@ exports.imageFile = function(db){
             },
             {
                 type      :'sprite', //0 -> 4
+                spriteL   : new Array(4,4,1,4,4,1,4,4,1,4,4,1),
                 name      :'player.png',
                 width     :'32',
                 height    :'32'
             },
             {
                 type      :'sprite', //1 -> 5
+                spriteL   : new Array(1,1,1,1,1,1,1,1,1,1,1,1),
                 name      :'paneau.png',
                 width     :'32',
                 height    :'32'
