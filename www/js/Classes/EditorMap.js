@@ -1,7 +1,13 @@
 var EditorMap = function(){
     
     EditorMap.width = 20;
-    EditorMap.height = 15;    
+    EditorMap.height = 15;   
+    
+    EditorMap.tileSets = new Array();
+    EditorMap.obstacles = new Array();
+    EditorMap.tiles = new Array();
+    
+    EditorMap.currentLayer = 0;
     
     /**
      * Create an empty array for the obstacles or tiles
@@ -14,15 +20,24 @@ var EditorMap = function(){
         return array;
     };
     
-    EditorMap.tileSets = new Array(0,0,0);
-    EditorMap.obstacles = EditorMap.emptyArray();
-    EditorMap.tiles = new Array(EditorMap.emptyArray(),
-                                EditorMap.emptyArray(),
-                                EditorMap.emptyArray());
+    /**
+     * Initialize the Map wit default values (empty)
+     * @returns {void}
+     */
+    EditorMap.init = function(){
+        var tileSetId = FilesManager.tilesets[Object.keys(FilesManager.tilesets)[0]]._id;
+        EditorMap.tileSets = new Array(tileSetId,tileSetId,tileSetId);
+        EditorMap.obstacles = EditorMap.emptyArray();
+        EditorMap.tiles = new Array(EditorMap.emptyArray(),
+                                    EditorMap.emptyArray(),
+                                    EditorMap.emptyArray());
+        EditorMap.currentLayer = 0;
+    };
     
-    EditorMap.currentLayer = 0;
-    
-    
+    /**
+     * Render the map
+     * @returns {void}
+     */
     EditorMap.draw = function(){
         var untilLayer = (this.currentLayer == -1 ? 2 : this.currentLayer);
         Drawer.drawWhite({x:1,y:1}, {x:20,y:15}, Canvas);
@@ -85,7 +100,6 @@ var EditorMap = function(){
         if(number != -1){
             $("#number_"+(number+1)).attr('src', "img/editor/"+(number+1)+"_red.png");
             TileSet.loadTileSet(EditorMap.tileSets[number]);
-            SELECT.setSelected(EditorMap.tileSets[number]);
         }
         else $("#obstacles").attr('src', "img/editor/obs_red.png");
     };

@@ -9,6 +9,16 @@ var Coords = function(x,y){
     this.y = y;
     
     /**
+     * Hydrate the Coords with another Coords
+     * @param {Coords} coords
+     * @returns {void}
+     */
+    this.hydrate = function(coords){
+        this.x = coords.x;
+        this.y = coords.y;
+    };
+    
+    /**
      * Transform the coordinate to a map index
      * @param {int} mapWidth The map width (in tiles)
      * @param {Boolean} floor round to floor or ceil

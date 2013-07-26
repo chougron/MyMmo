@@ -67,7 +67,7 @@ exports.pnj = function(db){
                     map:{author:"u0000001", title:"ForestHouse"},
                     coords:{x:6,y:8},
                     block:false,
-                    onWalk:"var NEWfONCTION = function(parameters){PLAYER.changeMap('u0000001','Maison',{x:11,y:12});}",
+                    onWalk:"var NEWfONCTION = function(parameters){ThingsManager.user.changeMap('u0000001','Maison',{x:11,y:12});}",
                     onAct:"var NEWfONCTION = function(parameters){this.speak(\"What a great door !\");}",
                     onInit:"var NEWfONCTION = function(parameters){}",
                     onClose:"var NEWfONCTION = function(parameters){}"
@@ -77,7 +77,7 @@ exports.pnj = function(db){
                     map:{author:"u0000001", title:"Maison"},
                     coords:{x:11,y:12},
                     block:false,
-                    onWalk:"var NEWfONCTION = function(parameters){PLAYER.changeMap('u0000001','ForestHouse',{x:6,y:8});}",
+                    onWalk:"var NEWfONCTION = function(parameters){ThingsManager.user.changeMap('u0000001','ForestHouse',{x:6,y:8});}",
                     onAct:"var NEWfONCTION = function(parameters){this.speak(\"What a great door !\");}",
                     onInit:"var NEWfONCTION = function(parameters){}",
                     onClose:"var NEWfONCTION = function(parameters){}"
@@ -135,7 +135,9 @@ exports.map = function(db){
             
             db.collection('map', function(err, collection){
                 collection.remove();
-                collection.insert([ForestHouse,Maison]);
+                collection.insert([ForestHouse,Maison], {safe:true}, function(){
+                    exports.quest(db);
+                });
             });
         });
     });
@@ -153,6 +155,31 @@ exports.item = function(db){
             db.collection('item', function(err,collection){
                 collection.remove();
                 collection.insert([Epee]);
+            });
+        });
+    });
+};
+
+exports.quest = function(db){  
+    db.collection('map', function(err, collection){
+        collection.find({},{_id:1}).toArray(function(err,maps){
+            db.collection('pnj', function(err, collection){
+                collection.find({},{_id:1}).toArray(function(err,pnjs){ //We start by getting the maps and pnjs
+                    var Quest1 = { //Quest1 that change the board on ForestHouse
+                        maps: maps[0]._id,
+                        script: 'this.PNJ("'+pnjs[2]._id+'").onAct = function(){ this.speak("Quest !"); };'
+                    };
+                    
+                    var Quest2 = { //Quest for everywhere
+                        maps: 'all',
+                        script: 'this.PNJ("'+pnjs[3]._id+'").onAct = function(){ this.speak("You want a quest ?"); };'
+                    };
+                    
+                    db.collection('quest', function(err,collection){
+                        collection.remove();
+                        collection.insert([Quest1,Quest2]);
+                    });
+                });
             });
         });
     });

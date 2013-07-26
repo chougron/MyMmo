@@ -1,5 +1,6 @@
 var Map = function(){
-    Map.author;
+    Map.author = '';
+    Map.title = '';
     Map.width;
     Map.height;
     Map.tileSets = new Array(); //Array of tilesets ID corresponding to the imageFiles
@@ -7,11 +8,7 @@ var Map = function(){
     
     //The Map
     Map.tiles = new Array();
-    
-    Map.pnjs = new Array();
-    Map.players = new Array();
     Map.repaint = new Array();
-    
     
     /**
      * Load a Map
@@ -20,13 +17,8 @@ var Map = function(){
      * @returns {void}
      */
     Map.loadMap = function(author, _name){
-        Motor.stop();
-        Map.name = _name;
         Map.author = author;
         Map.title = _name;
-        
-        Map.pnjs = new Array();
-        Map.players = new Array();
         
         var message = {act:'loadMap',map:{author:author,title:_name}};
         var toSend = JSON.stringify(message);
@@ -41,6 +33,8 @@ var Map = function(){
      */
     Map.doLoadMap = function(map){
         
+        Map.title       = map.title;
+        Map.author      = map.author;
         Map.width       = map.width;
         Map.height      = map.height;
         Map.tileSets    = map.tileSets;
@@ -51,7 +45,6 @@ var Map = function(){
             Map.repaint[i]=true;
         
         console.log('Map script loaded');
-        Motor.launch();
     };
     
     /**
@@ -76,90 +69,7 @@ var Map = function(){
                 Map.repaint[i] = false;
             }
         }
-        //Then we draw the PNJs
-        for(var i=0; i<Map.pnjs.length; i++){
-            var _pnj = Map.pnjs[i];
-            _pnj.draw();
-            var nb = _pnj.coords.toIndex(Map.width, true);
-            Map.repaint[nb] = true;
-            var nbup = _pnj.coords.toIndexUp(Map.width, true);
-            Map.repaint[nbup] = true;
-            nb = _pnj.coords.toIndex(Map.width, false);
-            Map.repaint[nb] = true;
-            nbup = _pnj.coords.toIndexUp(Map.width, false);
-            Map.repaint[nbup] = true;
-        }
-        //Then we draw the Players
-        for(var i=0; i<Map.players.length; i++){
-            var _player = Map.players[i];
-            if(Map.equals(_player.map)){
-                Map.players[i].draw();
-                var nb = _player.coords.toIndex(Map.width, true);
-                Map.repaint[nb] = true;
-                var nbup = _player.coords.toIndexUp(Map.width, true);
-                Map.repaint[nbup] = true;
-                nb = _player.coords.toIndex(Map.width, false);
-                Map.repaint[nb] = true;
-                nbup = _player.coords.toIndexUp(Map.width, false);
-                Map.repaint[nbup] = true;
-            }
-        }
-    };
-    
-    /**
-     * Add a player to the Map
-     * @param {String} name The player Name
-     * @param {int} sprite The player Sprite
-     * @param {int} direction The player direction
-     * @param {Coords} coords The player coordinates
-     * @returns {Player} The player added
-     */
-    Map.addPlayer = function(name, sprite, direction, coords){
-        var tmpPlayer = new Player();
-        tmpPlayer.create(name, sprite, direction, coords.x, coords.y);
-        tmpPlayer.setMap(Map.author, Map.title);
-        Map.players.push(tmpPlayer);
-        return tmpPlayer;
-    };
-    
-    /**
-     * Add a PNJ to the PNJ array
-     * @param {PNJ} pnj The PNJ to add
-     * @returns {void}
-     */
-    Map.addPnj = function(pnj){
-        Map.pnjs.push(pnj);
-    };
-    
-    /**
-     * Remove a player from the Map
-     * @param {Player} player
-     * @returns {void}
-     */
-    Map.removePlayer = function(player){
-        for(var i=0; i<Map.players.length; i++){
-            if(Map.players[i].name == player.name){
-                Map.players.splice(i,1);
-                break;
-            }
-        }
-    };
-    
-    /**
-     * Search for a PNJ at the coords, and give them
-     * the action if it exists
-     * @param {Coords} coords The coordinates to look
-     * @param {String} action The action to perform
-     * @returns {void}
-     */
-    Map.actPnj = function(coords, action){
-        if(!Map.pnjs.length)return;
-        for(var i=0; i<Map.pnjs.length;i++){
-            if(coords.equals(Map.pnjs[i].coords)){
-                if(action == 'act')Map.pnjs[i].onAct('');
-                if(action == 'walk')Map.pnjs[i].onWalk('');
-            }
-        }
+        ThingsManager.draw();
     };
     
     /**
@@ -169,12 +79,7 @@ var Map = function(){
      */
     Map.checkObstacle = function(coords){
         var index = coords.toIndex(Map.width, true);
-        if(Map.obstacles[index])return true;
-        for(var i=0; i<Map.pnjs.length; i++){
-            var _pnj = Map.pnjs[i];
-            if(_pnj.block && _pnj.coords.equals(coords))return true;
-        }
-        return false;
+        return Map.obstacles[index] || ThingsManager.obstacle(coords);
     };
     
     /**

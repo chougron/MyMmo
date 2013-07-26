@@ -8,29 +8,20 @@ var Socket = function(){
         var data = JSON.parse(message);
         console.log("Received : "+data.act);
         switch(data.act){
-            case 'join':
-                Socket.doJoin(data.player);
-                break;
-            case 'getPlayerList':
-                Socket.doGetPlayerList(data.players);
-                break;
-            case 'getPnjList':
-                Socket.doGetPnjList(data.pnjs);
-                break;
             case 'move':
                 Socket.doMove(data.player);
                 break;
-            case 'changeZone':
-                Socket.doChangeZone(data.player, data.oldZone, data.newZone);
-                break;
             case 'changeMap':
-                Socket.doChangeMap(data.player, data.oldMap, data.newMap);
+                Socket.doChangeMap(data.map, data.pnjs, data.quests, data.players);
+                break;
+            case 'otherChangeMap':
+                Socket.doOtherChangeMap(data.player,data.oldMap,data.newMap);
                 break;
             case 'chat':
                 Socket.doChat(data.content,data.player);
                 break;
             case 'getFiles':
-                Socket.doGetFiles(data.files);
+                Socket.doGetFiles(data.files, data.quests);
                 break;
             case 'loadMap':
                 Socket.doLoadMap(data.map);
@@ -38,42 +29,29 @@ var Socket = function(){
             case 'getAllItems':
                 Socket.doGetAllItems(data.items);
                 break;
+            case 'disconnect':
+                Socket.doDisconnect(data.player);
+                break;
         }
     });
     
     /**
-     * Add a player that just joined the map
-     * @param {BDD Player} player
+     * Ask the server the informations to change map
+     * @param {Object} newMap
      * @returns {void}
      */
-    Socket.doJoin = function(player){
-        Map.addPlayer(player.name, player.animation.sprite, player.animation.direction, new Coords(player.coords.x, player.coords.y));
-    };
-    
-    /**
-     * Add all the players of the map
-     * @param {BDD Player[]} players
-     * @returns {void}
-     */
-    Socket.doGetPlayerList = function(players){
-        for(var i=0; i<players.length; i++){
-            var player = players[i];
-            Map.addPlayer(player.name, player.animation.sprite, player.animation.direction, new Coords(player.coords.x, player.coords.y));
-        }
-    };
-    
-    /**
-     * Add all the PNJs of the map
-     * @param {BDD PNJ[]} pnjs
-     * @returns {void}
-     */
-    Socket.doGetPnjList = function(pnjs){
-        for(var i=0; i<pnjs.length; i++){
-            var pnj = new Pnj();
-            pnj.hydrate(pnjs[i]);
-            
-            Map.addPnj(pnj);
-        }
+    Socket.changeMap = function(newMap){
+        Motor.stop();
+        ThingsManager.changeMap();
+        var oldMap = {title:Map.title,author:Map.author};
+        var message = {
+            act:'changeMap',
+            player:ThingsManager.user,
+            oldMap:oldMap,
+            newMap:newMap
+        };
+        var json = JSON.stringify(message);
+        Socket.connection.send(json);
     };
     
     /**
@@ -82,32 +60,49 @@ var Socket = function(){
      * @returns {void}
      */
     Socket.doMove = function(player){
-        for(var i=0; i<Map.players.length; i++){
-            if(Map.players[i].name == player.name){
-                if(Map.players[i].distance(player) != 0){
+        for(var i in ThingsManager.players){
+            if(ThingsManager.players[i].name == player.name){
+                if(ThingsManager.players[i].distance(player) != 0){
                     //If we missed a message, the player should be elsewhere
                     //So we put it in it's cell, and do the movement
-                    Map.players[i].coords.x = player.coords.x;
-                    Map.players[i].coords.y = player.coords.y;
+                    ThingsManager.players[i].coords.x = player.coords.x;
+                    ThingsManager.players[i].coords.y = player.coords.y;
                 }
-                Map.players[i].move(player.animation.direction);
+                ThingsManager.players[i].move(player.animation.direction);
                 break;
             }
         }
     };
     
     /**
-     * Change the Map for a player
-     * @param {BDD Player} player
-     * @param {Map} oldMap
-     * @param {Map} newMap
+     * Change the Map for the User
+     * @param {Map} map The new map
+     * @param {Array} pnjs The pnjs presents on the new map
+     * @param {Array} quests The quests for the new map
+     * @param {Array} players The players presents on the new map
+     */
+    Socket.doChangeMap = function(map,pnjs,quests,players){
+        Map.doLoadMap(map);
+        ThingsManager.addPlayers(players);
+        ThingsManager.addPnjs(pnjs);
+        ThingsManager.user.setMap(map);
+        QuestsManager.addMapQuests(quests);
+        QuestsManager.refresh(QuestsManager.allQuests);
+        Motor.launch();
+    };
+    
+    /**
+     * Remove a player leaving the map or add a player joining it
+     * @param {Player} player
+     * @param {Object} oldMap
+     * @param {Object} newMap
      * @returns {void}
      */
-    Socket.doChangeMap = function(player, oldMap, newMap){
+    Socket.doOtherChangeMap = function(player,oldMap,newMap){
         if(Map.equals(oldMap))
-            Map.removePlayer(player);
+            ThingsManager.removePlayer(player);
         if(Map.equals(newMap))
-            Map.addPlayer(player.name, player.animation.sprite, player.animation.direction, new Coords(player.coords.x, player.coords.y));
+            ThingsManager.addPlayer(player);
     };
     
     /**
@@ -128,10 +123,12 @@ var Socket = function(){
     /**
      * Load the image files
      * @param {Array} files The files to load
+     * @param {Array} quests The quests for all the maps
      * @returns {void}
      */
-    Socket.doGetFiles = function(files){
+    Socket.doGetFiles = function(files, quests){
         FilesManager.doGetFromDB(files);
+        QuestsManager.addAllQuests(quests);
     };
     
     /**
@@ -150,5 +147,14 @@ var Socket = function(){
      */
     Socket.doGetAllItems = function(items){
         ItemsEditor.doGetAllItems(items);
+    };
+    
+    /**
+     * Remove a player that disconnected
+     * @param {Player} player
+     * @returns {void}
+     */
+    Socket.doDisconnect = function(player){
+        ThingsManager.removePlayer(player);
     };
 };

@@ -114,6 +114,8 @@ var FilesManager = function(){
         if(FilesManager.toLoad != 0)
             return false;
         
+        if(typeof Editor != "undefinded")
+                Editor.ready();
         if(typeof FilesEditor != "undefined")
                 FilesEditor.ready();
         if(typeof ItemsEditor != "undefined")

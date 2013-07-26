@@ -6,43 +6,17 @@ var Editor = function(){
         Drawer();
         EditorMap();
         
-        var tileSetArray = Editor.getTileSetArray();
-        var spriteArray = Editor.getSpriteArray();
+        FilesManager();
+        FilesManager.getFromDB();
+        
+        QuestsManager();
         
         Canvas($("#canvas").get(0));
-        Canvas.init(tileSetArray, spriteArray);
+        Canvas.init();
         
         TileSet($("#tileSet").get(0));
         TileSet.init();
         
-        Editor.launchSelect();
-        Editor.launchMapCanvas();
-        
-    };
-    
-    /**
-     * Get the TileSetArray
-     * @returns {Array}
-     */
-    Editor.getTileSetArray = function(){
-        var array = [
-            "plaines", //0
-            "plaines_objets", //1
-            "murs", //2
-            "mobilier" //3
-        ];
-        return array;
-    };
-    
-    /**
-     * Get the SpriteArray
-     * @returns {Array}
-     */
-    Editor.getSpriteArray = function(){
-        var array = [
-            "foxPNG" //0
-        ]; 
-        return array;
     };
     
     /**
@@ -52,9 +26,10 @@ var Editor = function(){
     Editor.launchSelect = function(){
         var select = $("#select_tileset");
         
-        for(var i=0; i<Canvas.tileSets.length; i++){
-            var name = Canvas.tileSets[i].src.split("/").pop();
-            select.append($('<option>', {value : i}).text(name)); 
+        for(var i in FilesManager.tilesets){
+            var tmpTileSet = FilesManager.tilesets[i];
+            select.append($('<option>', {value : tmpTileSet._id}).text(tmpTileSet.name));
+            delete(tmpTileSet);
         }
         
         select.change(function(){
@@ -91,7 +66,13 @@ var Editor = function(){
     };
     
     Editor.ready = function(){
-        TileSet.loadTileSet(0);
+        //Load the first tileset
+        TileSet.loadTileSet(FilesManager.tilesets[Object.keys(FilesManager.tilesets)[0]]._id);
+        
+        Editor.launchSelect();
+        Editor.launchMapCanvas();
+        
+        EditorMap.init();
         EditorMap.draw();
     };
 };

@@ -1,5 +1,3 @@
-var PLAYER;
-
 var Init = function(){
     
     Init.launch = function(){
@@ -12,6 +10,8 @@ var Init = function(){
         new MessageManager();
         new FilesManager();
         FilesManager.getFromDB();
+        new QuestsManager();
+        new ThingsManager();
     };
     
     /**
@@ -20,14 +20,12 @@ var Init = function(){
      * @returns {void}
      */
     Init.join = function(name){
-        Map.loadMap("u0000001",'ForestHouse');
-        var playerSprite = FilesManager.sprites[Object.keys(FilesManager.sprites)[0]]._id;
-        PLAYER = Map.addPlayer(name, playerSprite, 'UP', {x:6, y:11});
-        PLAYER.user = true;
-
-        var message = {'act':'join','player':PLAYER};
-        var tosend = JSON.stringify(message);
-        Socket.connection.send(tosend);
+        var playerSprite = FilesManager.sprites[Object.keys(FilesManager.sprites)[0]]._id; //We take the first sprite
+        ThingsManager.user.create(name, playerSprite, 'UP', 6, 11);
+        ThingsManager.user.user = true;
+        
+        var map = {title:'ForestHouse',author:'u0000001'};
+        Socket.changeMap(map);
     };
 };
 

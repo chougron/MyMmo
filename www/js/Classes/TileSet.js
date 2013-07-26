@@ -23,18 +23,18 @@ var TileSet = function(tileSetCanvasDomObject){
     
     /**
      * Load a new TileSet for the display
-     * @param {int} number The index of the new TileSet
+     * @param {String} number The _id of the new TileSet
      * @returns {void}
      */
     TileSet.loadTileSet = function(number){
         Drawer.drawWhite({x:1,y:1}, {x:10,y:12}, TileSet);
-        var _tileSet = Canvas.tileSets[number];
-        if(_tileSet.width != 320){
-            log("TileSet width != 320");
+        var _tileSet = FilesManager.tilesets[number];
+        if(_tileSet.img.width != 320){
+            console.log("TileSet width != 320");
             return;
         }
-        if(_tileSet.height != 384){
-            log("TileSet height != 384");
+        if(_tileSet.img.height != 384){
+            console.log("TileSet height != 384");
             return;
         }
         TileSet.tileSet = number;

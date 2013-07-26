@@ -3,15 +3,15 @@
  * @returns {Drawer}
  */
 var Drawer = function(){
-    Drawer.tileSet;
-    Drawer.numberWidth;
+    Drawer.tileSet; //The image
+    Drawer.numberWidth; //The number of tiles in a line
     
     Drawer.width = 32; //Size of a square tile, in px
     Drawer.height;
     
     /**
      * Set a new tileSet for the Drawer
-     * @param {int} number The tileSet number in the FilesManager Array
+     * @param {String} number The tileSet _id in the FilesManager Array
      * @returns {void}
      */
     Drawer.setTileSet = function(number){ 
@@ -25,7 +25,7 @@ var Drawer = function(){
     
     /**
      * Set an itemset for the Drawer
-     * @param {int} number The itemset number in the FilesManager Array
+     * @param {String} number The itemset _id in the FilesManager Array
      * @returns {void}
      */
     Drawer.setItemSet = function(number){

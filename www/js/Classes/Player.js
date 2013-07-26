@@ -27,14 +27,25 @@ var Player = function(){
     };
     
     /**
-     * Change the map on which is the player
-     * @param {String} author The map author
-     * @param {String} name The map name
+     * Hydrate the Player with another Player
+     * @param {Player} player
      * @returns {void}
      */
-    this.setMap = function(author, name){
-        this.map.author = author;
-        this.map.title = name;
+    this.hydrate = function(player){
+        this.name = player.name;
+        this.map = player.map;
+        this.animation.hydrate(player.animation);
+        this.coords.hydrate(player.coords);
+    };
+    
+    /**
+     * Change the Map of the Player
+     * @param {Map} map
+     * @returns {void}
+     */
+    this.setMap = function(map){
+        this.map.author = map.author;
+        this.map.title = map.title;
     };
     
     /**
@@ -53,12 +64,12 @@ var Player = function(){
     this.move = function(direction){
         if(this.isMoving)return;
         this.animation.setDirection(direction);
+        
         if(this.user){
             var message = {'act':'move','player':this};
             var tosend = JSON.stringify(message);
             Socket.connection.send(tosend);
         }
-        
         if(!this.canMove(direction)){
             return;
         }
@@ -152,7 +163,7 @@ var Player = function(){
                 coords.x+=1;
                 break;
         }
-        Map.actPnj(coords, 'act');
+        ThingsManager.actPnj(coords, 'act');
     };
     
     /**
@@ -161,7 +172,7 @@ var Player = function(){
      */
     this.checkOnPnj = function(){
         if(!this.user)return;
-        Map.actPnj(this.coords, 'walk');
+        ThingsManager.actPnj(this.coords, 'walk');
     };
     
     /**
@@ -172,27 +183,10 @@ var Player = function(){
      * @returns {void}
      */
     this.changeMap = function(_author, _name, _coords){
-        if(!this.user){
-            Map.removePlayer(this); 
-            return;
-        }
-        if(this.user){
-            var oldMap = {author:Map.author,title:Map.title};
-            this.coords = new Coords(_coords.x,_coords.y);
-            
-            
-            Map.loadMap(_author, _name);
-            
-            PLAYER = Map.addPlayer(this.name, this.animation.sprite, this.animation.direction, this.coords);
-            PLAYER.user = true;
-            
-            var newMap = {author:Map.author,title:Map.title};
-            
-            var message = {'act':'changeMap','player':PLAYER,'oldMap':oldMap,'newMap':newMap};
-            var tosend = JSON.stringify(message);
-            Socket.connection.send(tosend);
-            
-        }
+        if(!this.user)return;
+        var tmpMap = {title: _name, author:_author};
+        this.coords.hydrate(_coords);
+        Socket.changeMap(tmpMap);
     };
     
     /**

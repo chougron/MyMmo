@@ -16,6 +16,7 @@ server.listen(WebSocketServerPort, function(){
 });
 
 var io = require('socket.io').listen(server);
+io.set('log level', 1); // reduce logging
 
 //Connect to the MongoDB DB
 var mongo = require('mongodb'),
@@ -31,10 +32,12 @@ var dbInit = require('./dbInit');
 db.open(function(err, db) {
   if(!err) {
       db.authenticate('root', 'root', function(){ //Change here with your credentials
+          //Initialize the DB with objects for testing
           dbInit.imageFile(db);
           dbInit.pnj(db);
           dbInit.map(db);
           dbInit.item(db);
+//          dbInit.quest(db); //Called by map, cause map takes too long
       });
     console.log((new Date()) + " Db connected correctly");
   }
@@ -52,16 +55,13 @@ io.sockets.on('connection', function(socket){
   var client = {connection:socket,player:null};
   var index = clients.push(client) - 1;
   
-  console.log((new Date()) + " Connection accepted");
+  console.log((new Date()) + " Connection accepted. Index : " + index);
 
     // user sent some message
     socket.on('message', function(received) {
         var message = JSON.parse(received);
+        console.log('Index Message :' + index);
         switch(message.act){
-            case 'join':
-                clients[index].player = message.player;
-                doJoin(message.player, index);
-                break;
             case 'move':
                 var direction = message.player.animation.direction;
                 doMove(message.player, index);
@@ -119,6 +119,14 @@ io.sockets.on('connection', function(socket){
     // user disconnected
     socket.on('disconnect', function(connection) { //TODO: send the disconnection to other users on map
         console.log((new Date()) + " Peer disconnected.");
+        
+        //If the client is a player, send a disconnection message to others
+        if(clients[index].player){
+            var message = {act:'disconnect',player:clients[index].player};
+            var json = JSON.stringify(message);
+            sendMessageMap(json,index,clients[index].player.map);
+        }
+        
         // remove user from the list of connected clients
         clients.splice(index, 1, "NULL");
         var nb = 0;
@@ -163,43 +171,6 @@ var sendMessageMap = function(message, indexUser, map){
             console.log("Message sent to "+clients[indexUser].player.name);
         }
     }
-};
-
-/**
- * When a new player join a map, send messge to the others, and send him players and pnjs
- * @param {Player} player The player joining
- * @param {int} indexUser The user index
- * @returns {void}
- */
-var doJoin = function(player, indexUser){
-    //Send the new players to others, so they add him
-    player.user = false;
-    var message = {act:'join',player:player};
-    var json = JSON.stringify(message);
-    sendMessageMap(json,indexUser,player.map);
-    //On récupère la liste de tous les joueurs de la zone, que l'on envoie au joueur courant
-    var players = whoIsMap(player.map, indexUser);
-    message = {act:'getPlayerList',players:players};
-    json = JSON.stringify(message);
-    sendMessageToUser(json,indexUser);
-    sendPnj(player.map, indexUser);
-};
-
-/**
- * Send all the PNJs in the Map
- * @param {Map} map The Map where to find the PNJs
- * @param {int} indexUser The user to send the results
- * @returns {undefined}
- */
-var sendPnj = function(map, indexUser){
-    console.log(map);
-    db.collection('pnj', function(err, collection){
-        collection.find({map:map}).toArray(function(err, items) {
-            var message = {act:'getPnjList',pnjs:items};
-            var json = JSON.stringify(message);
-            sendMessageToUser(json,indexUser);
-        });
-    });
 };
 
 /**
@@ -249,19 +220,39 @@ var doMove = function(player, indexUser){
  * @returns {void}
  */
 var doChangeMap = function(player, oldMap, newMap, indexUser){
-    //Send the moving player to others so he moves to them too
-    player.user = false;
-    var message = {act:'changeMap',player:player,oldMap:oldMap,newMap:newMap};
-    var json = JSON.stringify(message);
-    sendMessageMap(json,indexUser,oldMap);
-    sendMessageMap(json,indexUser,newMap);
-    //We send the player list in the new map to the changing player
-    var players = whoIsMap(player.map, indexUser);
-    message = {act:'getPlayerList',players:players};
-    json = JSON.stringify(message);
-    sendMessageToUser(json,indexUser);
-    //We send the pnj list in the new map to the changing player
-    sendPnj(player.map, indexUser);
+    db.collection('map',function(err, collection){
+        collection.find({title:newMap.title,author:newMap.author}).nextObject(function(err,map){
+            db.collection('pnj',function(err,collection){
+                collection.find({map:{author: newMap.author, title: newMap.title}}).toArray(function(err,pnjs){
+                    db.collection('quest',function(err,collection){
+                        collection.find({maps: map._id}).toArray(function(err,quests){
+                            var players = whoIsMap(newMap,indexUser);
+                            var message = {
+                                act:'changeMap',
+                                map:map,
+                                pnjs:pnjs,
+                                quests:quests,
+                                players:players
+                            };
+                            var json = JSON.stringify(message);
+                            sendMessageToUser(json,indexUser);
+                            player.map = newMap;
+                            clients[indexUser].player = player;
+                            message = {
+                                act:'otherChangeMap',
+                                player:player,
+                                oldMap:oldMap,
+                                newMap:newMap
+                            };
+                            json = JSON.stringify(message);
+                            sendMessageMap(json,indexUser,oldMap);
+                            sendMessageMap(json,indexUser,newMap);
+                        });
+                    });
+                });
+            });
+        });
+    });
 };
 
 /**
@@ -338,10 +329,13 @@ var doGetFiles = function(indexUser){
                 files[file.type+"s"].push(file);
                 file = items.shift();
             }
-            
-            var message = {act:'getFiles',files:files};
-            var json = JSON.stringify(message);
-            sendMessageToUser(json,indexUser);
+            db.collection('quest', function(err,collection){
+                collection.find({maps:'all'}).toArray(function(err,quests){
+                    var message = {act:'getFiles',files:files, quests:quests};
+                    var json = JSON.stringify(message);
+                    sendMessageToUser(json,indexUser);                    
+                });
+            });
         });
     });
 };
