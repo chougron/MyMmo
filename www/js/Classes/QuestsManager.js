@@ -18,6 +18,21 @@ var QuestsManager = function(){
     };
     
     /**
+     * Refresh all the quests in the array
+     * @param {Array} quests _id Array
+     * @returns {void}
+     */
+    QuestsManager.refreshById = function(quests){
+            for(var i in quests){
+                var id = quests[i];
+                if(QuestsManager.allQuests[id])
+                    QuestsManager.allQuests[id].activate();
+                if(QuestsManager.mapQuests[id])
+                    QuestsManager.mapQuests[id].activate();
+            }
+    };
+    
+    /**
      * Add quests in the mapQuests array and refresh them
      * @param {Array} quests
      * @returns {void}

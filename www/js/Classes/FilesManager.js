@@ -6,16 +6,6 @@ var FilesManager = function(){
     FilesManager.toLoad = -1;
     
     /**
-     * Ask the server for the files to load
-     * @returns {void}
-     */
-    FilesManager.getFromDB = function(){
-        var message = {act:'getFiles'};
-        var toSend = JSON.stringify(message);
-        Socket.connection.send(toSend);
-    };
-    
-    /**
      * The function called when the server answer
      * @param {Array} files The files to load
      * @returns {void}
@@ -114,12 +104,14 @@ var FilesManager = function(){
         if(FilesManager.toLoad != 0)
             return false;
         
-        if(typeof Editor != "undefinded")
-                Editor.ready();
+//        if(typeof Editor != "undefinded")
+//                Editor.ready();
         if(typeof FilesEditor != "undefined")
                 FilesEditor.ready();
         if(typeof ItemsEditor != "undefined")
                 ItemsEditor.ready();
+        if(typeof Editor != "undefined")
+                Editor.ready();
         
         console.log("Everything loaded.");
         return true;

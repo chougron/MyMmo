@@ -165,9 +165,20 @@ exports.quest = function(db){
         collection.find({},{_id:1}).toArray(function(err,maps){
             db.collection('pnj', function(err, collection){
                 collection.find({},{_id:1}).toArray(function(err,pnjs){ //We start by getting the maps and pnjs
+                    var script = 'if(this.VAR("test").value == 0){ ';
+                        script += 'this.PNJ("'+pnjs[2]._id+'").onAct = function(){ ';
+                            script += 'this.speak("Quest !"); ';
+                            script += 'VAR(this.currentQuest + "_test").set(3); ';
+                        script += '}; ';
+                    script += '} ';
+                    script += 'if(this.VAR("test").value == 3){ ';
+                        script += 'this.PNJ("'+pnjs[2]._id+'").onAct = function(){ ';
+                            script += 'this.speak("Quested !"); ';
+                        script += '};';
+                    script += '} ';
                     var Quest1 = { //Quest1 that change the board on ForestHouse
                         maps: maps[0]._id,
-                        script: 'this.PNJ("'+pnjs[2]._id+'").onAct = function(){ this.speak("Quest !"); };'
+                        script: script
                     };
                     
                     var Quest2 = { //Quest for everywhere

@@ -14,8 +14,13 @@ var ItemsEditor = function(){
         ItemsEditor.canvas.context = ItemsEditor.canvas.getContext('2d');
         
         FilesManager();
-        FilesManager.getFromDB();
         Drawer();
+        QuestsManager();
+        VariablesManager();
+        
+        var message = {act:'loadGame',user:'u0000001'};
+        var toSend = JSON.stringify(message);
+        Socket.connection.send(toSend);
         
         $(ItemsEditor.canvas).mousedown(function(e){
             var PO = $(this).parent().offset(); //Parent Offset

@@ -19,6 +19,7 @@ var Pnj = function(){
     this.block = null;
     this._id;   //The ID in the DB
     this.relatedQuests = new Array();
+    this.currentQuest = null;
     
     /**
      * Hydrate a PNJ from a BDD Pnj
@@ -63,8 +64,9 @@ var Pnj = function(){
             //Empty the related Quests
             var _relatedQuests = this.relatedQuests;
             this.relatedQuests = new Array();
+            this.currentQuest = null;
             //Refresh the quests that will push the related Quests
-            QuestsManager.refresh(_relatedQuests);
+            QuestsManager.refreshById(_relatedQuests);
     };
     
     /**
@@ -137,7 +139,7 @@ var Pnj = function(){
     
     /**
      * Add a related Quest
-     * @param {String} _id
+     * @param {String} _id The quest _id
      * @returns {void}
      */
     this.addQuest = function(_id){
@@ -151,5 +153,6 @@ var Pnj = function(){
             this.oldWalk = this.onWalk;
         
         this.relatedQuests.push(_id);
+        this.currentQuest = _id;
     };
 };

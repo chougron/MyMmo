@@ -1,5 +1,9 @@
 var Editor = function(){
     
+    /**
+     * Launch the editor application
+     * @returns {void}
+     */
     Editor.launch = function(){
         Socket();
         
@@ -7,7 +11,6 @@ var Editor = function(){
         EditorMap();
         
         FilesManager();
-        FilesManager.getFromDB();
         
         QuestsManager();
         
@@ -17,6 +20,11 @@ var Editor = function(){
         TileSet($("#tileSet").get(0));
         TileSet.init();
         
+        VariablesManager();
+        
+        var message = {act:'loadGame',user:'u0000001'};
+        var toSend = JSON.stringify(message);
+        Socket.connection.send(toSend);
     };
     
     /**
@@ -65,6 +73,10 @@ var Editor = function(){
         });
     };
     
+    /**
+     * Function launched when the FilesManager loaded all resources.
+     * @returns {void}
+     */
     Editor.ready = function(){
         //Load the first tileset
         TileSet.loadTileSet(FilesManager.tilesets[Object.keys(FilesManager.tilesets)[0]]._id);

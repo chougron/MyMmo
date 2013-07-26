@@ -9,9 +9,13 @@ var Init = function(){
         Canvas.init();
         new MessageManager();
         new FilesManager();
-        FilesManager.getFromDB();
         new QuestsManager();
         new ThingsManager();
+        new VariablesManager();
+        
+        var message = {act:'loadGame',user:'u0000001'};
+        var toSend = JSON.stringify(message);
+        Socket.connection.send(toSend);
     };
     
     /**

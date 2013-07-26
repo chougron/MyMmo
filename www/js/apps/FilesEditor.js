@@ -8,7 +8,12 @@ var FilesEditor = function(){
      */
     FilesEditor.launch = function(){
         FilesManager();
-        FilesManager.getFromDB();
+        QuestsManager();
+        VariablesManager();
+        
+        var message = {act:'loadGame',user:'u0000001'};
+        var toSend = JSON.stringify(message);
+        Socket.connection.send(toSend);
     };
         
     /**

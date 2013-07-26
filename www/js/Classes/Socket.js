@@ -20,8 +20,8 @@ var Socket = function(){
             case 'chat':
                 Socket.doChat(data.content,data.player);
                 break;
-            case 'getFiles':
-                Socket.doGetFiles(data.files, data.quests);
+            case 'loadGame':
+                Socket.doLoadGame(data.files, data.quests, data.variables);
                 break;
             case 'loadMap':
                 Socket.doLoadMap(data.map);
@@ -121,14 +121,16 @@ var Socket = function(){
     };
     
     /**
-     * Load the image files
+     * Load the game Data
      * @param {Array} files The files to load
      * @param {Array} quests The quests for all the maps
+     * @param {Array} variables The variables of the user
      * @returns {void}
      */
-    Socket.doGetFiles = function(files, quests){
+    Socket.doLoadGame = function(files, quests, variables){
         FilesManager.doGetFromDB(files);
         QuestsManager.addAllQuests(quests);
+        VariablesManager.addVariables(variables);
     };
     
     /**

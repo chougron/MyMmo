@@ -60,7 +60,6 @@ io.sockets.on('connection', function(socket){
     // user sent some message
     socket.on('message', function(received) {
         var message = JSON.parse(received);
-        console.log('Index Message :' + index);
         switch(message.act){
             case 'move':
                 var direction = message.player.animation.direction;
@@ -92,8 +91,8 @@ io.sockets.on('connection', function(socket){
             case 'chat':
                 doChat(message.content,message.player,index);
                 break;
-            case 'getFiles':
-                doGetFiles(index);
+            case 'loadGame':
+                doLoadGame(message.user,index);
                 break;
             case 'loadMap':
                 doLoadMap(message.map,index);
@@ -112,6 +111,9 @@ io.sockets.on('connection', function(socket){
                 break;
             case 'saveItem':
                 doSaveItem(message.item,index);
+                break;
+            case 'variableSave':
+                doVariableSave(message.variable,index);
                 break;
         }
     });
@@ -315,7 +317,7 @@ var doChat = function(content,player,indexUser){
  * @param {int} indexUser The user to send to
  * @returns {void}
  */
-var doGetFiles = function(indexUser){
+var doLoadGame = function(user,indexUser){
     db.collection('imageFile', function(err, collection){
         collection.find().toArray(function(err, items) {
             var files = {
@@ -331,9 +333,13 @@ var doGetFiles = function(indexUser){
             }
             db.collection('quest', function(err,collection){
                 collection.find({maps:'all'}).toArray(function(err,quests){
-                    var message = {act:'getFiles',files:files, quests:quests};
-                    var json = JSON.stringify(message);
-                    sendMessageToUser(json,indexUser);                    
+                    db.collection('variable', function(err,collection){
+                        collection.find({user: user}).toArray(function(err,variables){
+                            var message = {act:'loadGame',files:files, quests:quests, variables:variables};
+                            var json = JSON.stringify(message);
+                            sendMessageToUser(json,indexUser);
+                        });
+                    });
                 });
             });
         });
@@ -406,7 +412,7 @@ var doCheckNewFiles = function(indexUser){
             collection.update(key,{ $setOnInsert: data},{upsert:true});
         }
     });
-    doGetFiles(indexUser);
+    doLoadGame('',indexUser);
 };
 
 /**
@@ -464,6 +470,22 @@ var doSaveItem = function(item,indexUser){
                 function(){
                     doGetAllItems(indexUser); //Send all the items again
                 }
+        );
+    });
+};
+
+/**
+ * Save the Variable for the current user
+ * @param {Variable} variable The Variable to save
+ * @param {index} indexUser The user index
+ * @returns {void}
+ */
+var doVariableSave = function(variable,indexUser){
+    db.collection('variable', function(err,collection){
+        collection.update(
+                {_id: variable._id},
+                {_id: variable._id, user: 'u0000001', value: variable.value},
+                {upsert:true}
         );
     });
 };
