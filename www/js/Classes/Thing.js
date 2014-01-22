@@ -1,14 +1,17 @@
-var Thing = function(){
-    
-    this.coords = new Coords(0,0);
-    
+var Thing = Class.extend(
+{
+    init : function()
+    {
+        this.coords = new Coords(0,0);
+    },
     /**
      * Make the thing speak
-     * @param {type} content The message to display
+     * @param {string} content The message to display
      * @returns {void}
      */
-    this.speak = function(content){
-        var tpx = this.coords.toPx();
+    speak : function(content)
+    {
+        var tpx = this.coords.toPx(GameEngineInstance.map.tileSize);
         
         tpx.x -= 16; //Center
         tpx.y -= 64; //Up
@@ -19,8 +22,17 @@ var Thing = function(){
             padding:'3px',
             'font-size':'10px'
         };
+        var message = new Message();
+        message.content = content;
+        message.style = style;
+        message.coords = tpx;
         
-        MessageManager.add(content,style,tpx,3000);
+        GameEngineInstance.messageManager.display(message, 3000);
         delete tpx;
-    };
-};
+        delete message;
+    },
+    hydrate : function(thing)
+    {
+        this.coords.hydrate(thing.coords);
+    }
+});

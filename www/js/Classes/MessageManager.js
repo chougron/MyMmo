@@ -1,43 +1,38 @@
-var MessageManager = function(){
-    MessageManager.messages = {};
-    MessageManager.nbMessage = 0;
-    
+var MessageManager = Class.extend(
+{
+    init : function()
+    {
+        this.messages = {};
+        this.nbMessage = 0;
+    },
     /**
-     * Add a Message to the manager then display it
-     * @param {String} content The content of the message
-     * @param {Array} style The style of the message (attr => value)
-     * @param {Coords} coords The Coords in px where to put the message
-     * @param {int} timeout The duration in ms of the message (<0 = no timeout)
+     * Display a message for a given duration
+     * @param {Message} message The message to display
+     * @pamam {int} duration The duration, in ms
      * @returns {void}
      */
-    MessageManager.add = function(content,style,coords,timeout){
-        var ID = "ID_"+ MessageManager.nbMessage;
-        var temp = new Message(ID);
-        
-        temp.content = content;
-        temp.style = style;
-        
-        MessageManager.messages[ID] = temp;
-        MessageManager.messages[ID].display(coords);
-        
-        delete temp;
-        
-        MessageManager.nbMessage++;
-        
-        if(timeout >= 0)
-            setTimeout( function(){MessageManager.remove(ID);} , timeout);
-    };
-    
+    display : function(message, duration)
+    {
+        var id = "message_" + this.nbMessage;
+        this.messages[id] = message;
+        this.messages[id].display();
+        this.nbMessage++;
+        if(duration >= 0)
+            setTimeout( function(){
+                    GameEngineInstance.messageManager.remove(id);
+                }, duration);
+    },
     /**
      * Remove a message from the manager and from the screen
-     * @param {string} ID The ID of the message in the manager
+     * @param {string} id The id of the message in the manager
      * @returns {void}
      */
-    MessageManager.remove = function(ID){
-        if(!MessageManager.messages[ID])
+    remove : function(id)
+    {
+        if(!this.messages[id])
             return;
         
-        MessageManager.messages[ID].destroy();
-        delete MessageManager.messages[ID];
-    };
-};
+        this.messages[id].destroy();
+        delete this.messages[id];
+    }
+});

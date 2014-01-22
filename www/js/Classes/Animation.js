@@ -1,88 +1,74 @@
-var Animation = function(){
-    
-    this.sprite;
-    this.cptAnimation = 0;
-    this.direction = 0;
-    this.action = 0;
-    
-    this.RIGHT = 0;
-    this.UP = 1;
-    this.DOWN = 2;
-    this.LEFT = 3;
-    
-    this.ATTACK = 0;
-    this.WALK = 1;
-    this.STAND = 2;
-    
+var Animation = Class.extend({
+    init : function()
+    {
+        this.sprite;
+        this.tickAnimation = 0;
+        this.divTick = 5;
+        this.divTickI = 0;
+        this.direction = 0;
+        this.action = 0;
+    },
     /**
-     * Hydrate an Animation from a BDD animation
-     * @param {BDD Animation} _animation The received animation
+     * Hydrate an Animation from a given one
+     * @param {Animation} animation The received animation
      * @returns {void}
      */
-    this.hydrate = function(_animation){
-        this.sprite = _animation.sprite;
-        this.direction = _animation.direction;
-        this.action = _animation.action;
-    };
-    
+    hydrate : function(animation)
+    {
+        this.sprite = animation.sprite;
+        this.direction = animation.direction;
+        this.action = animation.action;
+    },
     /**
      * Put the sprite number of the animation from the sprite array
-     * @param {type} numero
-     * @returns {undefined}
+     * @param {_id} the _id of the choosen sprite
+     * @returns {void}
      */
-    this.setSprite = function(numero){
-        this.sprite = numero;
-    };
-    
+    setSprite : function(_id)
+    {
+        this.sprite = _id;
+    },
     /**
      * Draw an animation then tick it
-     * @param {int} x
-     * @param {int} y
+     * @param {Coords} coords
      * @returns {void}
      */
-    this.draw = function(x,y){
-        var ligneSprite = this.direction*3 + this.action;
-        var tmpSprite = FilesManager.sprites[this.sprite];
-        Drawer.drawAnimation(x, y, tmpSprite.img, ligneSprite, this.cptAnimation);
+    draw : function(coords)
+    {
+        GameEngineInstance.drawerThings.drawAnimation(coords, this.sprite, this.action, this.direction, this.tickAnimation);
         this.tick();
-    };
-    
+    },
     /**
      * Put the direction
-     * @param {String} dir The animation direction
+     * @param {DIRECTION} direction The animation direction
      * @returns {void}
      */
-    this.setDirection = function(dir){
-        switch(dir){
-            case 'LEFT':case 3:this.direction = this.LEFT;break;
-            case 'UP':case 1:this.direction = this.UP;break;
-            case 'DOWN':case 2:this.direction = this.DOWN;break;
-            case 'RIGHT':case 0:this.direction = this.RIGHT;break;
-        }
-        this.cptAnimation = 0;
-    };
-    
+    setDirection : function(direction){
+        this.direction = direction;
+        this.tickAnimation = 0;
+    },
     /**
      * Put the action
-     * @param {String} act The action
+     * @param {ACTION} action The action
      * @returns {void}
      */
-    this.setAction = function(act){
-        switch(act){
-            case 'ATTACK':this.action = this.ATTACK;break;
-            case 'WALK':this.action = this.WALK;break;
-            case 'STAND':this.action = this.STAND;break;
-        }
-        this.cptAnimation = 0;
-    };
-    
+    setAction : function(action){
+        this.action = action;
+        this.tickAnimation = 0;
+    },
     /**
      * Tick the animation to the next image
      * @returns {void}
      */
-    this.tick = function(){
-        var ligneSprite = this.direction*3 + this.action;
-        this.cptAnimation++;
-        if(FilesManager.sprites[this.sprite].spriteL[ligneSprite] <= this.cptAnimation)this.cptAnimation = 0;
-    };
-};
+    tick : function(){
+        this.divTickI++;
+        if(this.divTickI == this.divTick)
+        {
+            this.divTickI=0;
+            this.tickAnimation++;
+        }
+        var nbTicks = GameEngineInstance.imageFileManager.sprites[this.sprite].lengths[this.direction*3 + this.action];
+        if(nbTicks <= this.tickAnimation)
+            this.tickAnimation = 0;
+    }
+}); 

@@ -1,79 +1,97 @@
-var Pnj = function(){
-    Thing.call(this);
-    
-    this.animation = null;
-    
-    this.onWalk = null;
-    this.oldWalk;
-    
-    this.onAct = null;
-    this.oldAct;
-    
-    this.onInit = null;
-    this.oldInit;
-    
-    this.onClose = null;
-    this.oldClose;
-    
-    this.map = null;
-    this.block = null;
-    this._id;   //The ID in the DB
-    this.relatedQuests = new Array();
-    this.currentQuest = null;
-    
+var Pnj = Thing.extend(
+{
+    init : function()
+    {
+        this._super();
+        
+        this._id;
+        this.animation = new Animation();
+        this.map;
+        this.block = false;
+        this.relatedQuests = new Array();
+        this.currentQuest = null;
+
+        this.onWalk = null;
+        this.oldWalk;
+
+        this.onAct = null;
+        this.oldAct;
+
+        this.onCreate = null;
+        this.oldCreate;
+
+        this.onDestroy = null;
+        this.oldDestroy;
+    },
     /**
-     * Hydrate a PNJ from a BDD Pnj
-     * @param {BDD Pnj} _pnj
+     * Hydrate a PNJ from a given Pnj
+     * @param {Pnj} pnj The given Pnj
      * @returns {void}
      */
-    this.hydrate = function(_pnj){
-        if(_pnj.animation != null){
-            this.animation  = new Animation();
-            this.animation.hydrate(_pnj.animation);
-        }
-        else this.animation = null;
+    hydrate : function(pnj)
+    {
+        this._super(pnj);
+        this._id = pnj._id;
+        if(pnj.animation != null)
+            this.animation.hydrate(pnj.animation);
+        else
+            this.animation = null;
+        this.map = pnj.map;
+        this.block = pnj.block;
         
-        this.map = _pnj.map;
-        this.coords = new Coords(_pnj.coords.x, _pnj.coords.y);
-        this.block = _pnj.block;
-        this._id = _pnj._id;
-        
-        eval(_pnj.onWalk);
-        this.onWalk = NEWfONCTION;
-        eval(_pnj.onAct);
-        this.onAct = NEWfONCTION;
-        eval(_pnj.onInit);
-        this.onInit = NEWfONCTION;
-        eval(_pnj.onClose);
-        this.onClose = NEWfONCTION;
-    };
-    
+        this.onWalk = pnj.onWalk;
+        if(typeof(this.onWalk) != "function")
+            eval(this.onWalk);
+        this.onAct = pnj.onAct;
+        if(typeof(this.onAct) != "function")
+            eval(this.onAct);
+        this.onCreate = pnj.onCreate;
+        if(typeof(this.onCreate) != "function")
+            eval(this.onCreate);
+        this.onDestroy = pnj.onDestroy;
+        if(typeof(this.onDestroy) != "function")
+            eval(this.onDestroy);
+        this.oldWalk = pnj.oldWalk;
+        if(typeof(this.oldWalk) != "function")
+            eval(this.oldWalk);
+        this.oldAct = pnj.oldAct;
+        if(typeof(this.oldAct) != "function")
+            eval(this.oldAct);
+        this.oldCreate = pnj.oldCreate;
+        if(typeof(this.oldCreate) != "function")
+            eval(this.oldCreate);
+        this.oldDestroy = pnj.oldDestroy;
+        if(typeof(this.oldDestroy) != "function")
+            eval(this.oldDestroy);
+    },
     /**
      * Draw the Pnj at the coordinate
      * @returns {void}
      */
-    this.draw = function(){
-        if(this.animation != null) this.animation.draw(this.coords.x, this.coords.y);
-    };
-    
+    draw : function()
+    {    
+        if(this.map != GameEngineInstance.map._id){
+            return;
+        }
+        if(this.animation != null) this.animation.draw(this.coords);
+    },
     /**
      * Refresh the related quests of the Pnj
      * @returns {void}
      */
-    this.refreshQuests = function(){
+    refreshQuests : function(){
             //Empty the related Quests
             var _relatedQuests = this.relatedQuests;
             this.relatedQuests = new Array();
             this.currentQuest = null;
             //Refresh the quests that will push the related Quests
-            QuestsManager.refreshById(_relatedQuests);
-    };
-    
+            GameEngineInstance.questManager.refreshById(_relatedQuests);
+    },
     /**
      * Trigger of the PNJ
      * @returns {void}
      */
-    this.walk = function(){
+    walk : function(){
         if(this.relatedQuests.length){
             this.onWalk();
             this.refreshQuests();
@@ -84,13 +102,12 @@ var Pnj = function(){
             }
             this.onWalk();
         }
-    };
-    
+    },
     /**
      * Trigger of the PNJ
      * @returns {void}
      */
-    this.act = function(){
+    act : function(){
         if(this.relatedQuests.length){
             this.onAct();
             this.refreshQuests();
@@ -101,58 +118,55 @@ var Pnj = function(){
             }
             this.onAct();
         }
-    };
-    
+    },
     /**
      * Trigger of the PNJ
      * @returns {void}
      */
-    this.init = function(){
+    create : function(){
         if(this.relatedQuests.length){
-            this.onInit();
+            this.onCreate();
             this.refreshQuests();
         } else {
-            if(this.oldInit){
-                this.onInit = this.oldInit;
-                this.oldInit = null;
+            if(this.oldCreate){
+                this.onCreate = this.oldCreate;
+                this.oldCreate = null;
             }
-            this.onInit();
+            this.onCreate();
         }
-    };
-    
+    },
     /**
      * Trigger of the PNJ
      * @returns {void}
      */
-    this.close = function(){
+    destroy : function(){
         if(this.relatedQuests.length){
-            this.onClose();
+            this.onDestroy();
             this.refreshQuests();
         } else {
-            if(this.oldClose){
-                this.onClose = this.oldClose;
-                this.oldClose = null;
+            if(this.oldDestroy){
+                this.onDestroy = this.oldDestroy;
+                this.oldDestroy = null;
             }
-            this.onClose();
+            this.onDestroy();
         }
-    };
-    
+    },
     /**
      * Add a related Quest
      * @param {String} _id The quest _id
      * @returns {void}
      */
-    this.addQuest = function(_id){
+    addQuest : function(_id){
         if(!this.oldAct)
             this.oldAct = this.onAct;
-        if(!this.oldClose)
-            this.oldClose = this.onClose;
-        if(!this.oldInit)
-            this.oldInit = this.onInit;
+        if(!this.oldDestroy)
+            this.oldDestroy = this.onDestroy;
+        if(!this.oldCreate)
+            this.oldCreate = this.onCreate;
         if(!this.oldWalk)
             this.oldWalk = this.onWalk;
         
         this.relatedQuests.push(_id);
         this.currentQuest = _id;
-    };
-};
+    }
+});

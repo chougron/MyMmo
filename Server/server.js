@@ -480,7 +480,7 @@ var doSaveItem = function(item,indexUser){
  * @param {index} indexUser The user index
  * @returns {void}
  */
-var doVariableSave = function(variable,indexUser){
+var doVariableSave = function(variable,indexUser){ //TODO: USER INDEXUSER !!!
     db.collection('variable', function(err,collection){
         collection.update(
                 {_id: variable._id},
