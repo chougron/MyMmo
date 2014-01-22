@@ -1,0 +1,60 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script src="js/lib/jquery-2.0.2.min.js"></script>
+        <script src="http://localhost:8080/socket.io/socket.io.js"></script>
+        <script src="js/Classes/Class.js"></script>
+        <script src="js/Classes/Animation.js"></script>
+        <script src="js/Classes/Thing.js"></script>
+        <script src="js/Classes/Coords.js"></script>
+        <script src="js/Classes/Drawer.js"></script>
+        <script src="js/Classes/Drawer2D.js"></script>
+        <script src="js/Classes/Enumerations.js"></script>
+        <script src="js/Classes/EventListener.js"></script>
+        <script src="js/Classes/GameEngine.js"></script>
+        <script src="js/Classes/GraphicEngine.js"></script>
+        <script src="js/Classes/ImageFile.js"></script>
+        <script src="js/Classes/ImageFileManager.js"></script>
+        <script src="js/Classes/Item.js"></script>
+        <script src="js/Classes/Itemset.js"></script>
+        <script src="js/Classes/Map.js"></script>
+        <script src="js/Classes/Message.js"></script>
+        <script src="js/Classes/MessageManager.js"></script>
+        <script src="js/Classes/Player.js"></script>
+        <script src="js/Classes/Pnj.js"></script>
+        <script src="js/Classes/Quest.js"></script>
+        <script src="js/Classes/QuestManager.js"></script>
+        <script src="js/Classes/Server.js"></script>
+        <script src="js/Classes/Sprite.js"></script>
+        <script src="js/Classes/ThingManager.js"></script>
+        <script src="js/Classes/Tileset.js"></script>
+        <script src="js/Classes/User.js"></script>
+        <script src="js/Classes/Variable.js"></script>
+        <script src="js/Classes/VariableManager.js"></script>
+    </head>
+    <body>
+        <div id="ecranJeu" 
+             style="border: 1px solid black; position: fixed; top:0px; left:0px; width:640px; height: 480px;"></div>
+        <canvas id="canvasMap" 
+                width="640" height="480"
+                style="border: 1px solid black; position: fixed; top:0px; left:0px; width:640px; height: 480px;"></canvas>
+        <canvas id="canvasThings" 
+                width="640" height="480"
+                style="border: 1px solid black; position: fixed; top:0px; left:0px; width:640px; height: 480px;"></canvas>
+        <form onsubmit="GameEngineInstance.loadGame();" action="#">
+        <input type="text" id="idJoueur"
+               style="position: fixed; top:480px;"/>
+        </form>
+        <script>
+            $(document).ready(function() {
+                GameEngineInstance = new GameEngine();
+            });
+        </script>
+    </body>
+</html>
