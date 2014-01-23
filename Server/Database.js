@@ -165,14 +165,13 @@ module.exports.savePlayer = function(player)
     });
 };
 
-//TODO : WTF IS GOING HERE ?????
 module.exports.saveVariable = function(variable,user)
 {
-    console.log(variable);
     db.collection('variable', function(e,collection)
     {
+        variable.user = user;
         collection.update(
-                {_id : variable._id, user: user},
+                {name : variable.name, user: user},
                 variable,
                 {upsert:true}
         );

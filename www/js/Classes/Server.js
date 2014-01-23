@@ -45,14 +45,13 @@ var Server = function()
     Server.connection.on('changeMap', function(message)
     {
         var data = JSON.parse(message);
-        console.log(data.user);
         GameEngineInstance.changeMap(data.user, data.map, data.players, data.pnjs);
     });
     
     Server.connection.on('playerLeaveMap', function(message)
     {
         var data = JSON.parse(message);
-        GameEngineInstance.thingManager.removePlayer(data.player_id);
+        GameEngineInstance.thingManager.removePlayer(data.id);
     });
     
     Server.connection.on('playerJoinMap', function(message)

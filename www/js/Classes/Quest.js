@@ -38,17 +38,16 @@ var Quest = Class.extend(
      * @returns {Variable} The selected Variable or new Variable if doesn't exists
      */
     VAR : function(name){
-        var _id = this._id + '_' + name;
+        var _name = this._id + '_' + name;
         var tmpVar;
         var variableManager = GameEngineInstance.variableManager;
-        if(variableManager.variables[_id]){
-            tmpVar = variableManager.variables[_id];
-        } else {
+        if(!variableManager.variables[_name])
+        {
             tmpVar = new Variable();
-            tmpVar._id = _id;
+            tmpVar.name = _name;
             variableManager.addVariable(tmpVar);
         }
-        return  variableManager.variables[_id];
+        return  variableManager.variables[_name];
     }
 });
 
@@ -57,15 +56,14 @@ var Quest = Class.extend(
 * @param {String} _id The _id of the variable
 * @returns {Variable}
 */
-var VAR = function(_id){
+var VAR = function(_name){
     var tmpVar;
     var variableManager = GameEngineInstance.variableManager;
-    if(variableManager.variables[_id]){
-        tmpVar = variableManager.variables[_id];
-    } else {
+    if(!variableManager.variables[_name])
+    {
         tmpVar = new Variable();
-        tmpVar._id = _id;
+        tmpVar.name = _name;
         variableManager.addVariable(tmpVar);
     }
-    return variableManager.variables[_id];
+    return  variableManager.variables[_name];
 };

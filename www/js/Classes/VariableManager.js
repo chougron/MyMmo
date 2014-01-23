@@ -13,8 +13,7 @@ var VariableManager = Class.extend(
     {
         var tmpVariable = new Variable();
         tmpVariable.hydrate(variable);
-        this.variables[tmpVariable._id] = tmpVariable;
-        delete tmpVariable;
+        this.variables[tmpVariable.name] = tmpVariable;
     },
     /**
      * Add an array of Variables in the variables Array

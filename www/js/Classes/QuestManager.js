@@ -55,6 +55,5 @@ var QuestManager = Class.extend(
             this.quests[tmpQuest._id] = tmpQuest;
             delete tmpQuest;
         }
-        this.refresh(this.quests);
     }
 });

@@ -2,8 +2,8 @@ var Variable = Class.extend(
 {
     init : function()
     {
-        this._id;
         this.value = 0;
+        this.name;
     },
     /**
      * Hydrate the current Variable with a given Variable
@@ -12,8 +12,8 @@ var Variable = Class.extend(
      */
     hydrate : function(variable)
     {
-        this._id = variable._id;
         this.value = variable.value;
+        this.name = variable.name;
     },
     /**
      * Set the value of the Variable

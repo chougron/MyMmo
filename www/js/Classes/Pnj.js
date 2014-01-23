@@ -187,8 +187,6 @@ var Pnj = Thing.extend(
          */
         this.changeMap = function(map,coords)
         {
-            console.log(map);
-            console.log(GameEngineInstance.map._id);
             GameEngineInstance.graphicEngine.stop();
             GameEngineInstance.thingManager.user.coords.hydrate(coords);
             Server.changeMap(map);

@@ -32,8 +32,8 @@ var GameEngine = function()
         {
             Server.enterGame();
         };
-        this.questManager.addQuests(quests);
         this.variableManager.addVariables(variables);
+        this.questManager.addQuests(quests);
         this.imageFileManager.load(files.sprites, files.tilesets, files.itemsets, onLoad);
     };
     

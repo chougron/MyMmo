@@ -93,7 +93,7 @@ module.exports.changeMap = function(player, newMap, index)
     if(player.map != newMap)
     {
         delete maps[player.map].players[player._id];
-        var toNotify = maps[player.map].players;
+        var toNotify = indexInSameMap(player.map, player._id);
         communication.playerLeaveMap(player._id,toNotify);
     }
     
@@ -113,7 +113,11 @@ module.exports.changeMap = function(player, newMap, index)
     //We add the player to the new Map
     var toNotify = indexInSameMap(newMap, player._id);
     communication.playerJoinMap(player,toNotify);
-    maps[player.map].players[player._id] = player._id;
+    maps[newMap].players[player._id] = player._id;
+    players_connected[player._id].player = player;
+    
+    //We save the player in the BDD ?
+    database.savePlayer(player);
 };
 
 module.exports.move = function(direction, player_id, map_id)
@@ -166,15 +170,24 @@ var canMove = function(coords, _map)
     var map = maps[_map];
     if(coords.x <= 0 || coords.y <= 0 || 
             coords.x > map.width || coords.y > map.height)
+    {
+        console.log("canMove off grid");
         return false;
-    var tileNumber = (coords.y - 1) * map.width + coords.x;
+    }
+    var tileNumber = (coords.y - 1) * map.width + coords.x -1;
     if(map.obstacles[tileNumber])
+    {
+        console.log("canMove obstacle");
         return false;
+    }
     for(var i in map.pnjs)
     {
         var pnj = pnjs[i];
         if(pnj.coords.x == coords.x && pnj.coords.y == coords.y && pnj.block == true)
+        {
+            console.log("canMove pnj block");
             return false;
+        }
     }
     return true;
 };
