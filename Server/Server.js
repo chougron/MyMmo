@@ -28,7 +28,7 @@ io.sockets.on('connection', function(socket)
     });
     
     socket.on('loadGame', function(data)
-    {
+    {   console.log(data.user);
         database.loadGame(data.user,index);
     });
     
@@ -40,5 +40,16 @@ io.sockets.on('connection', function(socket)
     socket.on('move', function(data)
     {
         game.move(data.direction,data.user,data.map);
+    });
+    
+    socket.on('changeMap', function(data)
+    {
+        game.changeMap(data.user,data.map,index);
+    });
+    
+    socket.on('saveVariable', function(data)
+    {
+        console.log(data.user);
+        database.saveVariable(data.variable, data.user);
     });
 });

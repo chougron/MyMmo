@@ -47,6 +47,9 @@ var User = Player.extend(
     move : function(direction)
     {
         if(this.isMoving)return;
+        
+        this.animation.setDirection(direction);
+        
         if(!this.canMove(direction))return;
         Server.move(direction);
         this._super(direction);

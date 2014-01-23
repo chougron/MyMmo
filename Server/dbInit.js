@@ -89,6 +89,7 @@ exports.map = function(db){
                 collection.remove();
                 collection.insert([ForestHouse,Maison], {safe:true}, function(){
                     exports.player(db);
+                    exports.pnj(db);
                 });
             });
         });
@@ -96,28 +97,8 @@ exports.map = function(db){
 };
 
 exports.player = function(db){
-    db.collection('imageFile', function(err, collection){
-        collection.find({},{_id:1}).toArray(function(err, items){
-            db.collection('map', function(err, collection){
-                collection.find({},{_id:1}).toArray(function(err, maps){
-                    db.collection('player', function(err, collection){
-                        collection.remove();
-                        collection.insert([
-                            {
-                                _id         :   1,
-                                name        :   "camille",
-                                isMoving    :   false,
-                                animation   :   {sprite:items[4]._id,direction:2,action:2},
-                                map         :   maps[0]._id,
-                                coords      :   {x:6,y:11}
-                            }
-                        ], function(){
-                            exports.pnj(db);
-                        });
-                    });
-                });
-            });
-        });
+    db.collection('player', function(err, collection){
+        collection.remove();
     });
 };
 
@@ -134,7 +115,7 @@ exports.pnj = function(db){
                             map:maps[0]._id,
                             coords:{x:6,y:8},
                             block:false,
-                            onWalk:"this.onWalk = function(parameters){ThingsManager.user.changeMap('u0000001','Maison',{x:11,y:12});}",
+                            onWalk:"this.onWalk = function(parameters){this.USER.changeMap('"+maps[1]._id+"',{x:11,y:12});}",
                             onAct:"this.onAct = function(parameters){this.speak(\"What a great door !\");}",
                             onCreate:"this.onCreate = function(parameters){}",
                             onDestroy:"this.onDestroy = function(parameters){}"
@@ -144,7 +125,7 @@ exports.pnj = function(db){
                             map:maps[1]._id,
                             coords:{x:11,y:12},
                             block:false,
-                            onWalk:"this.onWalk = function(parameters){ThingsManager.user.changeMap('u0000001','ForestHouse',{x:6,y:8});}",
+                            onWalk:"this.onWalk = function(parameters){this.USER.changeMap('"+maps[0]._id+"',{x:6,y:8});}",
                             onAct:"this.onAct = function(parameters){this.speak(\"What a great door !\");}",
                             onCreate:"this.onCreate = function(parameters){}",
                             onDestroy:"this.onDestroy = function(parameters){}"

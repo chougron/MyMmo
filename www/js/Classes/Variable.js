@@ -23,6 +23,7 @@ var Variable = Class.extend(
     set : function(value)
     {
         this.value = value;
+        Server.saveVariable(this);
     },
     /**
      * Increment the value if it's a number

@@ -98,7 +98,8 @@ module.exports.changeMap = function(player, newMap, index)
     }
     
     //We send the informations of the new Map to the player
-    var map = maps[player.map];
+    var map = maps[newMap];
+    
     var _players = new Array();
     var _pnjs = new Array();
     for(var _id in map.players)
@@ -106,12 +107,11 @@ module.exports.changeMap = function(player, newMap, index)
     for(var _id in map.pnjs)
         _pnjs.push(pnjs[_id]);
     
+    player.map = newMap;
     communication.changeMap(player,map,_players,_pnjs,index);
     
     //We add the player to the new Map
     var toNotify = indexInSameMap(newMap, player._id);
-    console.log(toNotify);
-    player.map = newMap;
     communication.playerJoinMap(player,toNotify);
     maps[player.map].players[player._id] = player._id;
 };

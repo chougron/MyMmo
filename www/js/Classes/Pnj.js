@@ -22,6 +22,8 @@ var Pnj = Thing.extend(
 
         this.onDestroy = null;
         this.oldDestroy;
+        
+        this.USER = new this.USER();
     },
     /**
      * Hydrate a PNJ from a given Pnj
@@ -79,7 +81,8 @@ var Pnj = Thing.extend(
      * Refresh the related quests of the Pnj
      * @returns {void}
      */
-    refreshQuests : function(){
+    refreshQuests : function()
+    {
             //Empty the related Quests
             var _relatedQuests = this.relatedQuests;
             this.relatedQuests = new Array();
@@ -91,7 +94,8 @@ var Pnj = Thing.extend(
      * Trigger of the PNJ
      * @returns {void}
      */
-    walk : function(){
+    walk : function()
+    {
         if(this.relatedQuests.length){
             this.onWalk();
             this.refreshQuests();
@@ -107,7 +111,8 @@ var Pnj = Thing.extend(
      * Trigger of the PNJ
      * @returns {void}
      */
-    act : function(){
+    act : function()
+    {
         if(this.relatedQuests.length){
             this.onAct();
             this.refreshQuests();
@@ -123,7 +128,8 @@ var Pnj = Thing.extend(
      * Trigger of the PNJ
      * @returns {void}
      */
-    create : function(){
+    create : function()
+    {
         if(this.relatedQuests.length){
             this.onCreate();
             this.refreshQuests();
@@ -139,7 +145,8 @@ var Pnj = Thing.extend(
      * Trigger of the PNJ
      * @returns {void}
      */
-    destroy : function(){
+    destroy : function()
+    {
         if(this.relatedQuests.length){
             this.onDestroy();
             this.refreshQuests();
@@ -156,7 +163,8 @@ var Pnj = Thing.extend(
      * @param {String} _id The quest _id
      * @returns {void}
      */
-    addQuest : function(_id){
+    addQuest : function(_id)
+    {
         if(!this.oldAct)
             this.oldAct = this.onAct;
         if(!this.oldDestroy)
@@ -168,5 +176,22 @@ var Pnj = Thing.extend(
         
         this.relatedQuests.push(_id);
         this.currentQuest = _id;
+    },
+    USER : function()
+    {
+        /**
+         * Change the map for the user
+         * @param {_id} map The _id of the new Map
+         * @param {Coords} coords The coords in the new Map
+         * @return {void}
+         */
+        this.changeMap = function(map,coords)
+        {
+            console.log(map);
+            console.log(GameEngineInstance.map._id);
+            GameEngineInstance.graphicEngine.stop();
+            GameEngineInstance.thingManager.user.coords.hydrate(coords);
+            Server.changeMap(map);
+        };
     }
 });

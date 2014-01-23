@@ -155,12 +155,25 @@ module.exports.save = function(table, item)
 
 module.exports.savePlayer = function(player)
 {
-    console.log("SAVE");
     db.collection('player', function(e,collection)
     {
         collection.update(
                 {_id : player._id},
                 player,
+                {upsert:true}
+        );
+    });
+};
+
+//TODO : WTF IS GOING HERE ?????
+module.exports.saveVariable = function(variable,user)
+{
+    console.log(variable);
+    db.collection('variable', function(e,collection)
+    {
+        collection.update(
+                {_id : variable._id, user: user},
+                variable,
                 {upsert:true}
         );
     });

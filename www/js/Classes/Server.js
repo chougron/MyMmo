@@ -33,9 +33,19 @@ var Server = function()
         Server.connection.emit('enterGame', message);
     };
     
+    Server.changeMap = function(map)
+    {
+        var message = {
+            map     :   map,
+            user    :   GameEngineInstance.thingManager.user
+        };
+        Server.connection.emit('changeMap', message);
+    };
+    
     Server.connection.on('changeMap', function(message)
     {
         var data = JSON.parse(message);
+        console.log(data.user);
         GameEngineInstance.changeMap(data.user, data.map, data.players, data.pnjs);
     });
     
@@ -66,4 +76,13 @@ var Server = function()
         var data = JSON.parse(message);
         GameEngineInstance.thingManager.players[data.player].move(data.direction);
     });
+    
+    Server.saveVariable = function(variable)
+    {
+        var message = { 
+            variable    :   variable,
+            user        :   GameEngineInstance.thingManager.user._id
+        };
+        Server.connection.emit('saveVariable', message);
+    };
 };

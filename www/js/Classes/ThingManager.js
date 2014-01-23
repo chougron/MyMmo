@@ -45,7 +45,8 @@ var ThingManager = Class.extend(
         var tmpPnj = new Pnj();
         tmpPnj.hydrate(pnj);
         this.pnjs[tmpPnj._id] = tmpPnj;
-        delete tmpPnj;
+        GameEngineInstance.questManager.refreshAll();
+        this.pnjs[tmpPnj._id].create();
     },
     /**
      * Remove a Player in the players Array
@@ -104,7 +105,14 @@ var ThingManager = Class.extend(
      */
     addPnjs : function(pnjs){
         for (var i in pnjs){
-            this.addPnj(pnjs[i]);
+            var pnj = new Pnj();
+            pnj.hydrate(pnjs[i]);
+            this.pnjs[pnj._id] = pnj;
+        }
+        GameEngineInstance.questManager.refreshAll();
+        for (var i in pnjs){
+            var pnj = pnjs[i];
+            this.pnjs[pnj._id].create();
         }
     },
     /**
