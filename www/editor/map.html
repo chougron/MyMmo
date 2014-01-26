@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Map Editor</title>
+        <base href="../">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script src="js/lib/jquery-2.0.2.min.js"></script>
+        <script src="http://localhost:8080/socket.io/socket.io.js"></script>
+        <script src="js/Classes/Class.js"></script>
+        <script src="js/Classes/Animation.js"></script>
+        <script src="js/Classes/Thing.js"></script>
+        <script src="js/Classes/Coords.js"></script>
+        <script src="js/Classes/Drawer.js"></script>
+        <script src="js/Classes/Drawer2D.js"></script>
+        <script src="js/Classes/Enumerations.js"></script>
+        <script src="js/Classes/EventListener.js"></script>
+        <script src="js/Classes/GraphicEngine.js"></script>
+        <script src="js/Classes/ImageFile.js"></script>
+        <script src="js/Classes/ImageFileManager.js"></script>
+        <script src="js/Classes/Item.js"></script>
+        <script src="js/Classes/Itemset.js"></script>
+        <script src="js/Classes/Map.js"></script>
+        <script src="js/Classes/Message.js"></script>
+        <script src="js/Classes/MessageManager.js"></script>
+        <script src="js/Classes/Pnj.js"></script>
+        <script src="js/Classes/Sprite.js"></script>
+        <script src="js/Classes/ThingManager.js"></script>
+        <script src="js/Classes/Tileset.js"></script>
+        <script src="js/Classes/editor/EditorServer.js"></script>
+        <script src="js/Classes/editor/EditorEngine.js"></script>
+        <script src="js/Classes/editor/MapEditorEngine.js"></script>
+        <script src="js/Classes/editor/EditorThingManager.js"></script>
+        <script src="js/Classes/editor/EditorQuestManager.js"></script>
+        <script src="js/Classes/editor/EditorEventListener.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/editor/map.css" media="screen" />
+    </head>
+    <body>
+        <div id="menu">
+            <ul>
+                <li>Maps</li>
+                <li>Pnjs</li>
+                <li>Quests</li>
+                <li>...</li>
+            </ul>
+        </div>
+        
+        <div id="editor">
+            <div id="editorBlock">
+                <canvas id="canvasMap"></canvas><br/>
+                <img src="img/editor/1_red.png" id="number_1" class="layer_number" alt="1" title="1" onclick="if(EditorMap)EditorMap.setCurrentLayer(0);">
+                <img src="img/editor/2_blue.png" id="number_2" class="layer_number" alt="2" title="2" onclick="if(EditorMap)EditorMap.setCurrentLayer(1);">
+                <img src="img/editor/3_blue.png" id="number_3" class="layer_number" alt="3" title="3" onclick="if(EditorMap)EditorMap.setCurrentLayer(2);">
+                <img src="img/editor/obs_blue.png" id="obstacles" class="layer_number" alt="obs" title="obs" onclick="if(EditorMap)EditorMap.setCurrentLayer(-1);">
+            </div>
+        </div>
+        
+        <div id="options">
+            Title : <span id="options_title"></span><br/>
+            Author : <span id="options_author"></span><br/>
+            Width : <span id="options_width"></span><br/>
+            Height : <span id="options_height"></span><br/>
+            Tile Size : <span id="options_tilesize"></span><br/>
+            <button>Save</button>
+            <button onclick="GameEngineInstance.clickLoad();">Load</button>
+        </div>
+        
+        <div id="loadAMap" class="dialog">
+            <h2>Load a Map :</h2>
+            <ul></ul>
+        </div>
+        
+        <script>
+            $(document).ready(function() {
+                GameEngineInstance = new MapEditorEngine();
+                GameEngineInstance.launch(1);
+            });
+        </script>
+    </body>
+</html>

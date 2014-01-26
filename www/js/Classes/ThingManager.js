@@ -10,19 +10,19 @@ var ThingManager = Class.extend(
      * Draw the Pnjs and the Players
      * @returns {void}
      */
-    draw : function()
+    draw : function(drawer)
     {
         //First we draw then PNJs
         for(var i in this.pnjs){
             var _pnj = this.pnjs[i];
-            _pnj.draw();
+            _pnj.draw(drawer);
         }
         //Then we draw the Players
         for(var i in this.players){
             var _player = this.players[i];
-            _player.draw();
+            _player.draw(drawer);
         }
-        this.user.draw();
+        this.user.draw(drawer);
     },
     /**
      * Add a Player in the players Array

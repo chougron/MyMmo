@@ -177,3 +177,42 @@ module.exports.saveVariable = function(variable,user)
         );
     });
 };
+
+module.exports.loadMapEditor = function(index)
+{
+    db.collection('imageFile', function(e,collection)
+    {
+        collection.find({}).toArray(function(e, imageFiles)
+        {
+            var files = {
+                sprites: new Array(),
+                tilesets: new Array(),
+                itemsets: new Array()
+            };
+            var file = imageFiles.shift();
+            while(file)
+            {
+                files[file.type+"s"].push(file);
+                file = imageFiles.shift();
+            }
+            db.collection('map', function(e,collection)
+            {
+                collection.find({},{_id:1,title:1}).toArray(function(e,maps)
+                {
+                    communication.loadMapEditor(files,maps,index);
+                });
+            });
+        });
+    });
+};
+
+module.exports.loadById = function(table, id, index)
+{
+    db.collection(table, function(e,collection)
+    {
+        collection.findOne({_id:ObjectID(id)}, function(e,element)
+        {
+            communication.loadById(table,element,index)
+        });
+    });
+};

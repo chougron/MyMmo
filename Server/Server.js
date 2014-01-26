@@ -18,7 +18,7 @@ var game = require('./Game')(communication);
 var database = require('./Database')(communication,game);
 game.setDatabase(database);
 
-io.sockets.on('connection', function(socket)
+io.of('/game').on('connection', function(socket)
 {
     var index = communication.connection(socket);
     
@@ -50,5 +50,19 @@ io.sockets.on('connection', function(socket)
     socket.on('saveVariable', function(data)
     {
         database.saveVariable(data.variable, data.user);
+    });
+});
+
+io.of('/editor').on('connection', function(socket)
+{
+    var index = communication.connection(socket);
+    
+    socket.on('loadMapEditor', function()
+    {
+        database.loadMapEditor(index);
+    });
+    socket.on('loadMap', function(data)
+    {
+        database.loadById('map',data.id,index);
     });
 });

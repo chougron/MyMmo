@@ -50,20 +50,3 @@ var Quest = Class.extend(
         return  variableManager.variables[_name];
     }
 });
-
-/**
-* Access a Variable from outside the quest
-* @param {String} _id The _id of the variable
-* @returns {Variable}
-*/
-var VAR = function(_name){
-    var tmpVar;
-    var variableManager = GameEngineInstance.variableManager;
-    if(!variableManager.variables[_name])
-    {
-        tmpVar = new Variable();
-        tmpVar.name = _name;
-        variableManager.addVariable(tmpVar);
-    }
-    return  variableManager.variables[_name];
-};

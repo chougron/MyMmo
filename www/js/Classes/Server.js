@@ -1,6 +1,6 @@
 var Server = function()
 {
-    Server.connection = io.connect('http://localhost:8080');
+    Server.connection = io.connect('http://localhost:8080/game');
     Server.connection.on('connect', function(){
         console.log("Server connection established");
     });

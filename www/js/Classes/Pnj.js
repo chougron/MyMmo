@@ -70,12 +70,12 @@ var Pnj = Thing.extend(
      * Draw the Pnj at the coordinate
      * @returns {void}
      */
-    draw : function()
+    draw : function(drawer)
     {    
         if(this.map != GameEngineInstance.map._id){
             return;
         }
-        if(this.animation != null) this.animation.draw(this.coords);
+        if(this.animation != null) this.animation.draw(this.coords, drawer);
     },
     /**
      * Refresh the related quests of the Pnj

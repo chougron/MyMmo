@@ -45,8 +45,8 @@ var GameEngine = function()
         this.thingManager.addPlayers(players);
         this.thingManager.addPnjs(pnjs);
         
-        this.graphicEngine.drawMap();
-        this.graphicEngine.start();
+        this.graphicEngine.drawMap(this.drawerMap);
+        this.graphicEngine.start(this.drawerThings);
     };
     
     this.move = function(direction)

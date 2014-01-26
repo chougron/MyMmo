@@ -33,9 +33,9 @@ var Animation = Class.extend({
      * @param {Coords} coords
      * @returns {void}
      */
-    draw : function(coords)
+    draw : function(coords, drawer)
     {
-        GameEngineInstance.drawerThings.drawAnimation(coords, this.sprite, this.action, this.direction, this.tickAnimation);
+        drawer.drawAnimation(coords, this.sprite, this.action, this.direction, this.tickAnimation);
         this.tick();
     },
     /**

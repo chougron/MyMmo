@@ -1,0 +1,93 @@
+body
+{
+    height: 100%;
+    margin: auto;
+}
+
+#menu
+{
+    position: fixed;
+    height: 100%;
+    width: 15%;
+    left: 0px;
+}
+
+#options
+{
+    position: fixed;
+    height: 100%;
+    width: 15%;
+    right: 0px;
+}
+
+#editor
+{
+    width: 70%;
+    position: fixed;
+    left: 15%;
+    height: 100%;
+    border-right: 1px solid black;
+    border-left: 1px solid black;
+}
+
+#editorBlock
+{
+    height: 100%;
+    width: 100%;
+    display: none;
+}
+
+#canvasMap
+{
+    border: 1px solid black;
+}
+
+#loadAMap h2
+{
+    text-align: center;
+}
+
+#loadAMap ul
+{
+    padding: 0;
+    margin: 0;
+    height: 80%;
+    overflow-y: scroll;
+    width: 100%;
+    position: absolute;
+    bottom: 0px;
+}
+
+#loadAMap ul li
+{
+    display: inline-block;
+    width: calc(100% /3 - 20px);
+    padding: 10px;
+    border: 1px solid black;
+    text-align: center;
+    cursor: pointer;
+}
+
+.dialog
+{
+    background: white;
+    display: none;
+    border: 1px solid black;
+    z-index: 10;
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;   
+    box-shadow: 0px 0px 0px 1000px rgba(0,0,0,0.5);
+}
+
+.dialog_close
+{
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 32px;
+    height: 32px;
+    border: 1px solid black;
+}

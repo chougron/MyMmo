@@ -34,7 +34,7 @@ var Map = Class.extend(
      * Draw the Map
      * @returns {void}
      */
-    draw : function()
+    draw : function(drawer)
     {
         for(var layer=0; layer<this.tileSets.length; layer++)
         {
@@ -48,7 +48,7 @@ var Map = Class.extend(
                         x = this.width;
                     var y = Math.ceil((i+1) / this.width);
                     var coords = new Coords(x,y);
-                    GameEngineInstance.drawerMap.drawTile(coords,this.tileSets[layer],value);
+                    drawer.drawTile(coords,this.tileSets[layer],value);
                 }
             }
         }

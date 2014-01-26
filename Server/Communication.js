@@ -90,3 +90,21 @@ exports.playerMove = function(direction, player_id, toNotify)
     var json = JSON.stringify(message);
     module.exports.sendMessageToUsers('playerMove',json,toNotify);
 };
+
+exports.loadMapEditor = function(files, maps, index)
+{
+    var message = {
+        files   :   files,
+        maps    :   maps
+    };
+    var json = JSON.stringify(message);
+    module.exports.sendMessageToUser('loadMapEditor', json, index);
+};
+
+exports.loadById = function(table, element, index)
+{
+    var message = {};
+    message[table] = element;
+    var json = JSON.stringify(message);
+    module.exports.sendMessageToUser('load_'+table, json, index);
+};

@@ -4,24 +4,24 @@ var GraphicEngine = Class.extend(
     {
         this.pause = false;
     },
-    start : function()
+    start : function(drawer)
     {
         this.pause = false;
-        this.draw();
+        this.draw(drawer);
     },
     stop : function()
     {
         this.pause = true;
     },
-    drawMap : function()
+    drawMap : function(drawer)
     {
-        GameEngineInstance.map.draw();
+        GameEngineInstance.map.draw(drawer);
     },
-    draw : function()
+    draw : function(drawer)
     {
-        GameEngineInstance.drawerThings.clear();
-        GameEngineInstance.thingManager.draw();
+        drawer.clear();
+        GameEngineInstance.thingManager.draw(drawer);
         if(!this.pause)
-            setTimeout(function(thisObj){thisObj.draw();},30,this);
+            setTimeout(function(thisObj){thisObj.draw(drawer);},30,this);
     }
 });

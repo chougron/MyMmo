@@ -26,11 +26,11 @@ var Player = Thing.extend(
      * Draw the player where he is
      * @returns {void}
      */
-    draw : function()
+    draw : function(drawer)
     {
         if(this.map != GameEngineInstance.map._id)
             return;
-        this.animation.draw(this.coords);
+        this.animation.draw(this.coords,drawer);
     },
     /**
      * Make the Player move if he is not currently moving
