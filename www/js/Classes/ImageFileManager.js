@@ -98,5 +98,20 @@ var ImageFileManager = Class.extend(
             return;
         console.log("All imagefiles loaded.");
         this.onLoaded();
+    },
+    /**
+     * Return all the Tileset with the given size of a tile
+     * @param {int} tilesize The size of one tile (square)
+     * @return {Array<_id : name>} The array of ids of tiles corresponding
+     */
+    getTilesetFromSize : function(tilesize)
+    {
+        var retour = {};
+        for(var i in this.tilesets)
+        {
+            if(this.tilesets[i].width == tilesize)
+                retour[i] = this.tilesets[i].name;
+        }
+        return retour;
     }
 });

@@ -46,21 +46,37 @@
         
         <div id="editor">
             <div id="editorBlock">
+                <div id="mapBlock">
                 <canvas id="canvasMap"></canvas><br/>
-                <img src="img/editor/1_red.png" id="number_1" class="layer_number" alt="1" title="1" onclick="if(EditorMap)EditorMap.setCurrentLayer(0);">
-                <img src="img/editor/2_blue.png" id="number_2" class="layer_number" alt="2" title="2" onclick="if(EditorMap)EditorMap.setCurrentLayer(1);">
-                <img src="img/editor/3_blue.png" id="number_3" class="layer_number" alt="3" title="3" onclick="if(EditorMap)EditorMap.setCurrentLayer(2);">
-                <img src="img/editor/obs_blue.png" id="obstacles" class="layer_number" alt="obs" title="obs" onclick="if(EditorMap)EditorMap.setCurrentLayer(-1);">
+                    <div id="editorBlock_buttons">
+                        <img src="img/editor/1_red.png" id="number_1" class="layer_number" alt="1" title="1" onclick="if(EditorMap)EditorMap.setCurrentLayer(0);">
+                        <img src="img/editor/2_blue.png" id="number_2" class="layer_number" alt="2" title="2" onclick="if(EditorMap)EditorMap.setCurrentLayer(1);">
+                        <img src="img/editor/3_blue.png" id="number_3" class="layer_number" alt="3" title="3" onclick="if(EditorMap)EditorMap.setCurrentLayer(2);">
+                        <img src="img/editor/obs_blue.png" id="obstacles" class="layer_number" alt="obs" title="obs" onclick="if(EditorMap)EditorMap.setCurrentLayer(-1);">
+                    </div>
+                </div>
+                <div id="tilesetBlock">
+                    <select id="selectTileset"></select><br/>
+                    <canvas id="canvasTileset"></canvas>
+                </div>
             </div>
         </div>
         
         <div id="options">
-            Title : <span id="options_title"></span><br/>
-            Author : <span id="options_author"></span><br/>
-            Width : <span id="options_width"></span><br/>
-            Height : <span id="options_height"></span><br/>
-            Tile Size : <span id="options_tilesize"></span><br/>
-            <button>Save</button>
+            <h2>Options</h2>
+            Title :<br>
+            <input type="text" id="options_title"/><img src="img/editor/refresh.png" class="refreshValues"/><br/>
+            Author :<br>
+            <input type="text" id="options_author"/><img src="img/editor/refresh.png" class="refreshValues"/><br/>
+            Width :<br>
+            <input type="text" id="options_width"/><img src="img/editor/refresh.png" class="refreshValues"/><br/>
+            Height :<br>
+            <input type="text" id="options_height"/><img src="img/editor/refresh.png" class="refreshValues"/><br/>
+            Tile Size :<br>
+            <input type="text" id="options_tilesize"/><img src="img/editor/refresh.png" class="refreshValues"/><br/>
+            <br/>
+            <button onClick="GameEngineInstance.newMap();">New</button>
+            <button onClick="GameEngineInstance.save();">Save</button>
             <button onclick="GameEngineInstance.clickLoad();">Load</button>
         </div>
         

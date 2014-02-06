@@ -18,6 +18,7 @@ body
     height: 100%;
     width: 15%;
     right: 0px;
+    text-align: center;
 }
 
 #editor
@@ -37,7 +38,30 @@ body
     display: none;
 }
 
+#editorBlock_buttons
+{
+    clear: both;
+}
+
+#mapBlock
+{
+    float: left;
+    text-align: center;
+}
+
+#tilesetBlock
+{
+    float: right;
+    text-align: center;
+}
+
 #canvasMap
+{
+    float: left;
+    border: 1px solid black;
+}
+
+#canvasTileset
 {
     border: 1px solid black;
 }
