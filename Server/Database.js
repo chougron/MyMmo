@@ -10,9 +10,6 @@ var ObjectID = require('mongodb').ObjectID;
 var dbServer = new Server('localhost', 27017, {auto_reconnect : true});
 var db = new Db('test', dbServer, {safe : false});
 
-
-var dbInit = require('./dbInit');
-
 var newPlayer = {
     name        :   "camille",
     isMoving    :   false,
@@ -24,8 +21,6 @@ db.open(function(err, db)
     if(!err)
     {
         db.authenticate('root', 'root', function(){
-            //Initialize the DB with objects for testing
-//            dbInit.imageFile(db);
             console.log((new Date()) + " DB connected.");
             
             db.collection('pnj', function(e,collection)

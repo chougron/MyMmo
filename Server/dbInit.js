@@ -1,4 +1,32 @@
-exports.imageFile = function(db){
+"use strict";
+process.title = 'BDD Init';
+
+var mongo = require('mongodb'),
+        Server = mongo.Server,
+        Db = mongo.Db;
+
+var ObjectID = require('mongodb').ObjectID;
+
+var dbServer = new Server('localhost', 27017, {auto_reconnect : true});
+var db = new Db('test', dbServer, {safe : false});
+
+db.open(function(err, db)
+{
+    if(!err)
+    {
+        db.authenticate('root', 'root', function(){
+            console.log((new Date()) + " DB connected.");
+            imageFile(db);
+        });
+    }
+    else
+    {
+        console.log("DB opening error :");
+        console.log(err);
+    }
+});
+
+var imageFile = function(db){
     db.collection('imageFile', function(err, collection){
         collection.remove();
         collection.insert([
@@ -53,12 +81,12 @@ exports.imageFile = function(db){
                 height    :'24'
             }
       ], function(){
-          exports.map(db);
+          map(db);
       });
     });
 };
 
-exports.map = function(db){
+var map = function(db){
     db.collection('imageFile', function(err, collection){
         collection.find({},{_id:1}).toArray(function(err, items){
             //ForestHouse
@@ -88,21 +116,21 @@ exports.map = function(db){
             db.collection('map', function(err, collection){
                 collection.remove();
                 collection.insert([ForestHouse,Maison], {safe:true}, function(){
-                    exports.player(db);
-                    exports.pnj(db);
+                    player(db);
+                    pnj(db);
                 });
             });
         });
     });
 };
 
-exports.player = function(db){
+var player = function(db){
     db.collection('player', function(err, collection){
         collection.remove();
     });
 };
 
-exports.pnj = function(db){
+var pnj = function(db){
     db.collection('imageFile', function(err, collection){
         collection.find({},{_id:1}).toArray(function(err, items){
             db.collection('map', function(err, collection){
@@ -151,7 +179,7 @@ exports.pnj = function(db){
                             onDestroy:"this.onDestroy = function(parameters){}"
                         }
                     ], function(){
-                        exports.item(db);
+                        item(db);
                     });
                   });
                 });
@@ -160,7 +188,7 @@ exports.pnj = function(db){
     });
 };
 
-exports.item = function(db){
+var item = function(db){
     db.collection('imageFile', function(err, collection){
         collection.find({},{_id:1}).toArray(function(err,items){
             //Epee
@@ -172,14 +200,14 @@ exports.item = function(db){
             db.collection('item', function(err,collection){
                 collection.remove();
                 collection.insert([Epee], function(){
-                    exports.quest(db);
+                    quest(db);
                 });
             });
         });
     });
 };
 
-exports.quest = function(db){  
+var quest = function(db){  
     db.collection('map', function(err, collection){
         collection.find({},{_id:1}).toArray(function(err,maps){
             db.collection('pnj', function(err, collection){
@@ -210,7 +238,10 @@ exports.quest = function(db){
                     
                     db.collection('quest', function(err,collection){
                         collection.remove();
-                        collection.insert([Quest1,Quest2]);
+                        collection.insert([Quest1,Quest2], function()
+                        {
+                            console.log("Initialisation finished. You can stop this thread.")
+                        });
                     });
                 });
             });
